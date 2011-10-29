@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Magic</title>
+    <script src="https://raw.github.com/headjs/headjs/v0.96/dist/head.load.min.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css" media="screen">
+      body {
+        text-align: center;
+      }
+      
+      canvas {
+        margin: auto;
+        width: 800px;
+        height: 800px;
+        background: black;
+      }
+      
+      input[type=textfield] {
+        width: 40px;
+      }
+      
+    </style>
+  </head>
+  <body>
+    <canvas id="canvas" width="800" height="800"></canvas>
+    <form onsubmit="stage.refresh(); return false;">
+      Beats/Minute:
+      <input type="textfield" id="bpm" value="120">
+      &nbsp;&nbsp;&nbsp;
+      Beats/Measure:
+      <input type="textfield" id="measure" value="4">
+      &nbsp;&nbsp;&nbsp;
+      <input type="submit" value="Update!">
+    </form>
+    
+    
+    <script type="text/javascript" charset="utf-8">
+      head.js(
+        
+        'extensions.js',
+        'random.js',
+        'sprite.js',
+        'backdrop.js',
+        'stage.js',
+        
+        function() {
+          window.stage = new Stage();
+        }
+      );
+    </script>
+  </body>
+</html>
