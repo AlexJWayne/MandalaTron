@@ -18,13 +18,21 @@ class @Stage
     setTimeout =>
       # Create actors
       @refresh()
-    
+      
       # Start the render loop
       @render()
       
     , 0
-  
+    
+    # setInterval @refresh, 12000
+      
+    
   refresh: =>
+    @beat   = new Beat(
+                parseFloat(document.getElementById('bpm').value)
+                parseFloat(document.getElementById('measure').value)
+              ).start()
+    
     @mainHue = Random.int 360
     @sprites = []
     
@@ -32,12 +40,13 @@ class @Stage
     @sprites.push new Backdrop()
     
     # Beat sprites
-    @sprites = @sprites.concat Sprite.generate
-                                  bpm:      parseFloat(document.getElementById('bpm').value)
-                                  measure:  parseFloat(document.getElementById('measure').value)
+    @sprites = @sprites.concat Sprite.generate()
   
   render: =>
     @frames++
+    
+    # Keep time
+    @beat.update()
     
     # Clear
     @ctx.clearRect -100, -100, 200, 200

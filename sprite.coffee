@@ -8,17 +8,14 @@ class @Sprite
   @generate: (options = {}) ->
     style =
       speed:          Random.float(150, 300, curve:Curve.low)
-      baseWidth:      Random.float(2, 16)
+      baseWidth:      Random.float(2,   20,  curve:Curve.low)
       beatColor:      "hsl(#{ stage.mainHue + 180 }, 25%, #{ [90 - Random.int(30), Random.int(30)].random() }%)"
       emphasisColor:  "hsl(#{ stage.mainHue + 180 }, 100%, 50%)"
-      emphasisSpeed:  Random.float(1, 4, curve:Curve.low)
-      motionCurve:    Curve.high
+      emphasisSpeed:  Random.float(1, 2, curve:Curve.low)
+      motionCurve:    [Curve.low, Curve.high].random()
     
-    { bpm, measure } = options
-    bps = options.bpm / 60
-    
-    for i in [1..measure]
-      new this { bps, measure, style, beat: i }
+    for i in [0...stage.beat.perMeasure]
+      new this { style, beat: i }
   
   
   
@@ -26,33 +23,33 @@ class @Sprite
   # --------
   
   constructor: (options = {}) ->
-    @style    = options.style
-    @beat     = options.beat
-    @emphasis = options.beat == 1
-    @measure  = options.measure
-    @bps      = options.bps
+    @style      = options.style
+    @beat       = options.beat
+    @emphasis   = options.beat == 0
+    @perMeasure = stage.beat.perMeasure
+    @bps        = stage.beat.bps
     
-    # assume 4 beats per measure for now...
-    @offset   = (@beat-1) / @measure
-    @lifetime = @measure / @bps
+    @offset     = (@beat) / @perMeasure
+    @lifetime   = @perMeasure / @bps
     
-    @startedAt = now() - (@offset * @lifetime)
+    @startedAt  = stage.beat.startedAt - (@offset * @lifetime)
   
   render: (ctx) ->
     if @emphasis
       ctx.strokeStyle = @style.emphasisColor
-      ctx.lineWidth   = @style.baseWidth * @bps * 2 * @emphasisSpeed
+      ctx.lineWidth   = @style.baseWidth * @bps * 2 * @style.emphasisSpeed
     else
       ctx.strokeStyle = @style.beatColor
       ctx.lineWidth   = @style.baseWidth * @bps
     
-    elapsed = now() - @startedAt
-    while elapsed > @lifetime
-      elapsed -= @lifetime
-      @startedAt += @lifetime
+    elapsed = stage.beat.now - @startedAt
+    if elapsed > 0
+      while elapsed > @lifetime
+        elapsed -= @lifetime
+        @startedAt += @lifetime
     
-    speed = @style.speed
-    speed *= @style.emphasisSpeed if @emphasis
+      speed = @style.speed
+      speed *= @style.emphasisSpeed if @emphasis
     
-    curve = [Curve]
-    ctx.strokeCircle 0, 0, speed * @style.motionCurve(elapsed/@lifetime)
+      curve = [Curve]
+      ctx.strokeCircle 0, 0, speed * @style.motionCurve(elapsed/@lifetime)

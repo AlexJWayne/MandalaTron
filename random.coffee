@@ -4,7 +4,7 @@
     unless max?
       max = min
       min = 0
-      
+    
     curve(Math.random()) * (max - min) + min
   
   int: ->

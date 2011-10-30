@@ -17,17 +17,16 @@
       }, this), 0);
     }
     Stage.prototype.refresh = function() {
+      this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
       this.mainHue = Random.int(360);
       this.sprites = [];
       this.sprites.push(new Backdrop());
-      return this.sprites = this.sprites.concat(Sprite.generate({
-        bpm: parseFloat(document.getElementById('bpm').value),
-        measure: parseFloat(document.getElementById('measure').value)
-      }));
+      return this.sprites = this.sprites.concat(Sprite.generate());
     };
     Stage.prototype.render = function() {
       var sprite, _i, _len, _ref;
       this.frames++;
+      this.beat.update();
       this.ctx.clearRect(-100, -100, 200, 200);
       this.ctx.fillStyle = "hsl(" + this.mainHue + ", 75%, 25%)";
       this.ctx.fillRect(-100, -100, 200, 200);
