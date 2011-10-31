@@ -7,7 +7,7 @@
         return Math.seedrandom(seedField.value);
       } else {
         seed = Math.floor(Math.random() * 1000000);
-        Math.seedrandom(seed);
+        Math.seedrandom(seed.toString());
         return seedField.value = seed;
       }
     },
