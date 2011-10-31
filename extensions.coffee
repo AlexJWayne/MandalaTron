@@ -10,6 +10,10 @@ Math.TAU = Math.PI * 2
 window.now = -> new Date().getTime() / 1000
 
 
+# Blend 2 values in porportions of a nromalized float
+window.blend = (start, end, amount) ->
+  start * (1 - amount) + end * amount
+
 # Enhance the 2d rendering context with some convenience methods
 extendPrototype CanvasRenderingContext2D,
   
@@ -33,3 +37,9 @@ extendPrototype CanvasRenderingContext2D,
 extendPrototype Array,
   random: (options = {}) ->
     this[Random.int 0, @length, options]
+
+class @HSL
+  constructor: (@h, @s, @l) ->
+  toString: ->
+    "hsl(#{ @h.toFixed 1 }, #{ @s.toFixed 1 }%, #{ @l.toFixed 1 }%)"
+  

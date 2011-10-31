@@ -11,17 +11,26 @@
       this.ctx.scale(this.canvas.width / 200, this.canvas.height / 200);
       this.frames = 0;
       this.start = now();
+      setInterval(this.showFps, 5000);
       setTimeout(__bind(function() {
         this.refresh();
         return this.render();
       }, this), 0);
     }
     Stage.prototype.refresh = function() {
+      var i, _ref, _results;
+      Random.seed();
       this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
       this.mainHue = Random.int(360);
       this.sprites = [];
       this.sprites.push(new Backdrop());
-      return this.sprites = this.sprites.concat(Sprite.generate());
+      _results = [];
+      for (i = 0, _ref = Random.int(1, 5, {
+        curve: Curve.low
+      }); 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+        _results.push(this.sprites = this.sprites.concat(Sprite.generate()));
+      }
+      return _results;
     };
     Stage.prototype.render = function() {
       var sprite, _i, _len, _ref;

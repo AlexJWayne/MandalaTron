@@ -16,7 +16,7 @@
       }
       
       input[type=textfield] {
-        width: 40px;
+        width: 50px;
       }
       
     </style>
@@ -24,6 +24,9 @@
   <body>
     <canvas id="canvas" width="800" height="800"></canvas>
     <form onsubmit="stage.refresh(); return false;">
+      Seed:
+      <input type="textfield" id="seed" value="">
+      &nbsp;&nbsp;&nbsp;
       Beats/Minute:
       <input type="textfield" id="bpm" value="90">
       &nbsp;&nbsp;&nbsp;
@@ -38,6 +41,7 @@
       head.js(
         
         'extensions.js',
+        'seedrandom.js',
         'random.js',
         'beat.js',
         'sprite.js',

@@ -1,5 +1,16 @@
 (function() {
   this.Random = {
+    seed: function() {
+      var seed, seedField;
+      seedField = document.getElementById('seed');
+      if (seedField.value) {
+        return Math.seedrandom(seedField.value);
+      } else {
+        seed = Math.floor(Math.random() * 1000000);
+        Math.seedrandom(seed);
+        return seedField.value = seed;
+      }
+    },
     float: function(min, max, options) {
       var curve;
       if (options == null) {

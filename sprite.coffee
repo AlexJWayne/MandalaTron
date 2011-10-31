@@ -8,11 +8,13 @@ class @Sprite
   @generate: (options = {}) ->
     style =
       speed:          Random.float(150, 300, curve:Curve.low)
-      baseWidth:      Random.float(2,   20,  curve:Curve.low)
-      beatColor:      "hsl(#{ stage.mainHue + 180 }, 25%, #{ [90 - Random.int(30), Random.int(30)].random() }%)"
-      emphasisColor:  "hsl(#{ stage.mainHue + 180 }, 100%, 50%)"
+      baseWidth:      Random.float(2,   10,  curve:Curve.low)
+      beatColor:      new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()
+      emphasisColor:  new HSL(stage.mainHue + 180, 100, 50).toString()
       emphasisSpeed:  Random.float(1, 2, curve:Curve.low)
       motionCurve:    [Curve.low, Curve.high].random()
+      alpha:          Random.float(0.25, 1, curve:Curve.high)
+      outward:        [yes, yes, no].random()
     
     for i in [0...stage.beat.perMeasure]
       new this { style, beat: i }
@@ -35,9 +37,11 @@ class @Sprite
     @startedAt  = stage.beat.startedAt - (@offset * @lifetime)
   
   render: (ctx) ->
+    ctx.globalAlpha = @style.alpha
+    
     if @emphasis
       ctx.strokeStyle = @style.emphasisColor
-      ctx.lineWidth   = @style.baseWidth * @bps * 2 * @style.emphasisSpeed
+      ctx.lineWidth   = @style.baseWidth * @bps * 3 * @style.emphasisSpeed
     else
       ctx.strokeStyle = @style.beatColor
       ctx.lineWidth   = @style.baseWidth * @bps
@@ -50,6 +54,10 @@ class @Sprite
     
       speed = @style.speed
       speed *= @style.emphasisSpeed if @emphasis
+      
+      if @style.outward
+        speed *= @style.motionCurve(elapsed/@lifetime)
+      else
+        speed *= @style.motionCurve(1 - elapsed/@lifetime)
     
-      curve = [Curve]
-      ctx.strokeCircle 0, 0, speed * @style.motionCurve(elapsed/@lifetime)
+      ctx.strokeCircle 0, 0, speed

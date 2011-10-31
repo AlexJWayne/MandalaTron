@@ -11,6 +11,9 @@
   window.now = function() {
     return new Date().getTime() / 1000;
   };
+  window.blend = function(start, end, amount) {
+    return start * (1 - amount) + end * amount;
+  };
   extendPrototype(CanvasRenderingContext2D, {
     circle: function(x, y, radius) {
       return this.arc(x, y, radius, 0, Math.TAU);
@@ -36,4 +39,15 @@
       return this[Random.int(0, this.length, options)];
     }
   });
+  this.HSL = (function() {
+    function HSL(h, s, l) {
+      this.h = h;
+      this.s = s;
+      this.l = l;
+    }
+    HSL.prototype.toString = function() {
+      return "hsl(" + (this.h.toFixed(1)) + ", " + (this.s.toFixed(1)) + "%, " + (this.l.toFixed(1)) + "%)";
+    };
+    return HSL;
+  })();
 }).call(this);

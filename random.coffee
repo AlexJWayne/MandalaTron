@@ -1,4 +1,13 @@
 @Random =
+  seed: ->
+    seedField = document.getElementById('seed')
+    if seedField.value
+      Math.seedrandom seedField.value
+    else
+      seed = Math.floor Math.random() * 1000000
+      Math.seedrandom seed
+      seedField.value = seed
+  
   float: (min, max, options = {}) ->
     curve = options.curve || Curve.linear
     unless max?

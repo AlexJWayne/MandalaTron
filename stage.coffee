@@ -13,7 +13,7 @@ class @Stage
     @start  = now()
     
     # Setup FPS reporter
-    # setInterval @showFps, 2000
+    setInterval @showFps, 5000
     
     setTimeout =>
       # Create actors
@@ -23,11 +23,11 @@ class @Stage
       @render()
       
     , 0
-    
-    # setInterval @refresh, 12000
       
     
   refresh: =>
+    Random.seed()
+    
     @beat   = new Beat(
                 parseFloat(document.getElementById('bpm').value)
                 parseFloat(document.getElementById('measure').value)
@@ -40,7 +40,8 @@ class @Stage
     @sprites.push new Backdrop()
     
     # Beat sprites
-    @sprites = @sprites.concat Sprite.generate()
+    for i in [0..Random.int(1, 5, curve:Curve.low)]
+      @sprites = @sprites.concat Sprite.generate()
   
   render: =>
     @frames++

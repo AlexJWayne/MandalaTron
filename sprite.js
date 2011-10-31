@@ -9,15 +9,19 @@
         speed: Random.float(150, 300, {
           curve: Curve.low
         }),
-        baseWidth: Random.float(2, 20, {
+        baseWidth: Random.float(2, 10, {
           curve: Curve.low
         }),
-        beatColor: "hsl(" + (stage.mainHue + 180) + ", 25%, " + ([90 - Random.int(30), Random.int(30)].random()) + "%)",
-        emphasisColor: "hsl(" + (stage.mainHue + 180) + ", 100%, 50%)",
+        beatColor: new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString(),
+        emphasisColor: new HSL(stage.mainHue + 180, 100, 50).toString(),
         emphasisSpeed: Random.float(1, 2, {
           curve: Curve.low
         }),
-        motionCurve: [Curve.low, Curve.high].random()
+        motionCurve: [Curve.low, Curve.high].random(),
+        alpha: Random.float(0.25, 1, {
+          curve: Curve.high
+        }),
+        outward: [true, true, false].random()
       };
       _results = [];
       for (i = 0, _ref = stage.beat.perMeasure; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
@@ -42,10 +46,11 @@
       this.startedAt = stage.beat.startedAt - (this.offset * this.lifetime);
     }
     Sprite.prototype.render = function(ctx) {
-      var curve, elapsed, speed;
+      var elapsed, speed;
+      ctx.globalAlpha = this.style.alpha;
       if (this.emphasis) {
         ctx.strokeStyle = this.style.emphasisColor;
-        ctx.lineWidth = this.style.baseWidth * this.bps * 2 * this.style.emphasisSpeed;
+        ctx.lineWidth = this.style.baseWidth * this.bps * 3 * this.style.emphasisSpeed;
       } else {
         ctx.strokeStyle = this.style.beatColor;
         ctx.lineWidth = this.style.baseWidth * this.bps;
@@ -60,8 +65,12 @@
         if (this.emphasis) {
           speed *= this.style.emphasisSpeed;
         }
-        curve = [Curve];
-        return ctx.strokeCircle(0, 0, speed * this.style.motionCurve(elapsed / this.lifetime));
+        if (this.style.outward) {
+          speed *= this.style.motionCurve(elapsed / this.lifetime);
+        } else {
+          speed *= this.style.motionCurve(1 - elapsed / this.lifetime);
+        }
+        return ctx.strokeCircle(0, 0, speed);
       }
     };
     return Sprite;
