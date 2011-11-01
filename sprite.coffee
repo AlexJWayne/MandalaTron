@@ -13,7 +13,7 @@ class @Sprite
       emphasisColor:  new HSL(stage.mainHue + 180, 100, 50).toString()
       emphasisSpeed:  Random.float(1, 2, curve:Curve.low)
       motionCurve:    [Curve.low, Curve.high].random()
-      alpha:          Random.float(0.25, 1, curve:Curve.high)
+      alpha:          Random.float(0.35, 1, curve:Curve.high)
       outward:        [yes, yes, no].random()
     
     for i in [0...stage.beat.perMeasure]

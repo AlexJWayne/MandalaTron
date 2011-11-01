@@ -1,6 +1,10 @@
 @Random =
   seed: ->
     seedField = document.getElementById('seed')
+    
+    if window.location.hash
+      seedField.value = window.location.hash[1..-1]
+    
     if seedField.value
       Math.seedrandom seedField.value
     else
@@ -22,7 +26,7 @@
 @Curve =
   linear: (x) -> x
   low:    (x) -> x*x*x
-  high:   (x) -> 1 - (1-x) * (1-x) * (1-x)
+  high:   (x) -> 1 - (1-x)*(1-x)*(1-x)
   
   test: (fn) ->
     console.log "#{ i } => #{ fn i }" for i in [0..1] by 0.1

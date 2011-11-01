@@ -24,12 +24,12 @@
       this.coefCurve = [Curve.low, Curve.high].random();
     }
     Backdrop.prototype.render = function(ctx) {
-      var coef, grad, innerColor, outerColor;
+      var coef, grad, innerColor, min, outerColor;
       if (ctx == null) {
         ctx = this.ctx;
       }
       ctx.globalAlpha = 1.0;
-      coef = this.coefCurve(stage.beat.measureProgress());
+      coef = stage.beat.beat() === 0 ? this.coefCurve(1 - stage.beat.beatProgress()) : (min = 1 / stage.beat.perMeasure, this.coefCurve(stage.beat.measureProgress().normalize(1 / stage.beat.perMeasure, 1)));
       innerColor = new HSL(stage.mainHue + this.hueShift * coef, blend(this.innerSat[0], this.innerSat[1], coef), blend(this.innerLum[0], this.innerLum[1], coef));
       outerColor = new HSL(stage.mainHue + this.hueShift * coef, blend(this.outerSat[0], this.outerSat[1], coef), blend(this.outerLum[0], this.outerLum[1], coef));
       grad = this.ctx.createRadialGradient(0, 0, 0, 0, 0, 150);

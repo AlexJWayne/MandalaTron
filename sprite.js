@@ -18,7 +18,7 @@
           curve: Curve.low
         }),
         motionCurve: [Curve.low, Curve.high].random(),
-        alpha: Random.float(0.25, 1, {
+        alpha: Random.float(0.35, 1, {
           curve: Curve.high
         }),
         outward: [true, true, false].random()

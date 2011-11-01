@@ -22,10 +22,12 @@ class @Backdrop
     
   render: (ctx = @ctx) ->
     ctx.globalAlpha = 1.0
-    coef = if 
-      
+    
+    coef = if stage.beat.beat() == 0
+      @coefCurve 1 - stage.beat.beatProgress()
     else
-      @coefCurve stage.beat.measureProgress()
+      min = 1 / stage.beat.perMeasure
+      @coefCurve stage.beat.measureProgress().normalize(1 / stage.beat.perMeasure, 1)
     
     innerColor = new HSL(
       stage.mainHue + @hueShift*coef

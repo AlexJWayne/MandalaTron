@@ -39,6 +39,15 @@
       return this[Random.int(0, this.length, options)];
     }
   });
+  extendPrototype(Number, {
+    normalize: function(min, max) {
+      if (max == null) {
+        max = min;
+        min = 0;
+      }
+      return (this - min) / (max - min);
+    }
+  });
   this.HSL = (function() {
     function HSL(h, s, l) {
       this.h = h;

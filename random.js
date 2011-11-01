@@ -3,6 +3,9 @@
     seed: function() {
       var seed, seedField;
       seedField = document.getElementById('seed');
+      if (window.location.hash) {
+        seedField.value = window.location.hash.slice(1);
+      }
       if (seedField.value) {
         return Math.seedrandom(seedField.value);
       } else {

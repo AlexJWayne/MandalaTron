@@ -38,8 +38,17 @@ extendPrototype Array,
   random: (options = {}) ->
     this[Random.int 0, @length, options]
 
+extendPrototype Number,
+  
+  # (0.75).normalize(0.5, 1.0) => 0.5
+  normalize: (min, max) ->
+    unless max?
+      max = min
+      min = 0
+      
+    (this - min) / (max - min)
+
 class @HSL
   constructor: (@h, @s, @l) ->
-  toString: ->
-    "hsl(#{ @h.toFixed 1 }, #{ @s.toFixed 1 }%, #{ @l.toFixed 1 }%)"
+  toString: -> "hsl(#{ @h.toFixed 1 }, #{ @s.toFixed 1 }%, #{ @l.toFixed 1 }%)"
   
