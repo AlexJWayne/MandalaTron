@@ -59,7 +59,7 @@ class @Stage
     sprite.render @ctx for sprite in @sprites
     
     # Schedule next render
-    webkitRequestAnimationFrame @render, canvas
+    requestAnimFrame @render, canvas
   
   showFps: =>
     rightNow = now()

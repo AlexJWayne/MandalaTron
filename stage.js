@@ -44,7 +44,7 @@
         sprite = _ref[_i];
         sprite.render(this.ctx);
       }
-      return webkitRequestAnimationFrame(this.render, canvas);
+      return requestAnimFrame(this.render, canvas);
     };
     Stage.prototype.showFps = function() {
       var fps, rightNow;

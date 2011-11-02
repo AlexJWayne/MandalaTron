@@ -6,9 +6,17 @@ extendPrototype = (base, methods) ->
 # Tau is more awesome than PI
 Math.TAU = Math.PI * 2
 
+# requestAnimationFrame shim
+window.requestAnimFrame = do ->
+   window.requestAnimationFrame       ||
+   window.webkitRequestAnimationFrame ||
+   window.mozRequestAnimationFrame    ||
+   window.oRequestAnimationFrame      ||
+   window.msRequestAnimationFrame     ||
+   (callback, element) -> window.setTimeout callback, 1000 / 60
+
 # now in seconds
 window.now = -> new Date().getTime() / 1000
-
 
 # Blend 2 values in porportions of a nromalized float
 window.blend = (start, end, amount) ->
