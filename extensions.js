@@ -10,7 +10,7 @@
   Math.TAU = Math.PI * 2;
   window.requestAnimFrame = (function() {
     return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback, element) {
-      return window.setTimeout(callback, 1000 / 60);
+      return setTimeout(callback, 1000 / 60);
     };
   })();
   window.now = function() {
@@ -20,20 +20,31 @@
     return start * (1 - amount) + end * amount;
   };
   extendPrototype(CanvasRenderingContext2D, {
+    "do": function(fn) {
+      this.save();
+      fn();
+      return this.restore();
+    },
     circle: function(x, y, radius) {
       return this.arc(x, y, radius, 0, Math.TAU);
     },
     fillCircle: function(x, y, radius) {
       this.beginPath();
       this.circle(x, y, radius);
-      this.closePath();
       return this.fill();
     },
     strokeCircle: function(x, y, radius) {
       this.beginPath();
       this.circle(x, y, radius);
-      this.closePath();
       return this.stroke();
+    },
+    rect: function(x, y, width, height) {
+      this.beginPath();
+      this.moveTo(x, y);
+      this.lineTo(x + width, y);
+      this.lineTo(x + width, y + height);
+      this.lineTo(x, y + height);
+      return this.closePath();
     }
   });
   extendPrototype(Array, {
@@ -51,6 +62,27 @@
         min = 0;
       }
       return (this - min) / (max - min);
+    },
+    limit: function() {
+      return function(min, max) {
+        if (max == null) {
+          max = min;
+          min = 0;
+        }
+        if (this < min) {
+          return min;
+        } else if (this > max) {
+          return max;
+        } else {
+          return this;
+        }
+      };
+    },
+    deg2rad: function() {
+      return this * Math.TAU / 360;
+    },
+    rad2deg: function() {
+      return this * 360 / Math.TAU;
     }
   });
   this.HSL = (function() {

@@ -8,12 +8,12 @@ Math.TAU = Math.PI * 2
 
 # requestAnimationFrame shim
 window.requestAnimFrame = do ->
-   window.requestAnimationFrame       ||
-   window.webkitRequestAnimationFrame ||
-   window.mozRequestAnimationFrame    ||
-   window.oRequestAnimationFrame      ||
-   window.msRequestAnimationFrame     ||
-   (callback, element) -> window.setTimeout callback, 1000 / 60
+  window.requestAnimationFrame       ||
+  window.webkitRequestAnimationFrame ||
+  window.mozRequestAnimationFrame    ||
+  window.oRequestAnimationFrame      ||
+  window.msRequestAnimationFrame     ||
+  (callback, element) -> setTimeout callback, 1000 / 60
 
 # now in seconds
 window.now = -> new Date().getTime() / 1000
@@ -25,6 +25,11 @@ window.blend = (start, end, amount) ->
 # Enhance the 2d rendering context with some convenience methods
 extendPrototype CanvasRenderingContext2D,
   
+  do: (fn) ->
+    @save()
+    fn()
+    @restore()
+  
   # Circles!
   circle: (x, y, radius) ->
     @arc x, y, radius, 0, Math.TAU
@@ -32,14 +37,20 @@ extendPrototype CanvasRenderingContext2D,
   fillCircle: (x, y, radius) ->
     @beginPath()
     @circle x, y, radius
-    @closePath()
     @fill()
   
   strokeCircle: (x, y, radius) ->
     @beginPath()
     @circle x, y, radius
-    @closePath()
     @stroke()
+  
+  rect: (x, y, width, height) ->
+    @beginPath()
+    @moveTo x,         y
+    @lineTo x + width, y
+    @lineTo x + width, y + height
+    @lineTo x,         y + height
+    @closePath()
 
 
 extendPrototype Array,
@@ -55,6 +66,24 @@ extendPrototype Number,
       min = 0
       
     (this - min) / (max - min)
+  
+  limit: -> (min, max) ->
+    unless max?
+      max = min
+      min = 0
+    
+    if this < min
+      min
+    else if this > max
+      max
+    else
+      this
+    
+  deg2rad: ->
+    this * Math.TAU / 360
+  
+  rad2deg: ->
+    this * 360 / Math.TAU
 
 class @HSL
   constructor: (@h, @s, @l) ->

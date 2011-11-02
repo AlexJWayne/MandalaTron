@@ -21,29 +21,30 @@ class @Backdrop
     @coefCurve = [Curve.low, Curve.high].random()
     
   render: (ctx = @ctx) ->
-    ctx.globalAlpha = 1.0
+    ctx.do =>
+      ctx.globalAlpha = 1.0
+      
+      coef = if stage.beat.beat() == 0
+        @coefCurve 1 - stage.beat.beatProgress()
+      else
+        min = 1 / stage.beat.perMeasure
+        @coefCurve stage.beat.measureProgress().normalize(1 / stage.beat.perMeasure, 1)
     
-    coef = if stage.beat.beat() == 0
-      @coefCurve 1 - stage.beat.beatProgress()
-    else
-      min = 1 / stage.beat.perMeasure
-      @coefCurve stage.beat.measureProgress().normalize(1 / stage.beat.perMeasure, 1)
+      innerColor = new HSL(
+        stage.mainHue + @hueShift*coef
+        blend(@innerSat[0], @innerSat[1], coef)
+        blend(@innerLum[0], @innerLum[1], coef)
+      )
     
-    innerColor = new HSL(
-      stage.mainHue + @hueShift*coef
-      blend(@innerSat[0], @innerSat[1], coef)
-      blend(@innerLum[0], @innerLum[1], coef)
-    )
+      outerColor = new HSL(
+        stage.mainHue + @hueShift*coef
+        blend(@outerSat[0], @outerSat[1], coef)
+        blend(@outerLum[0], @outerLum[1], coef)
+      )
     
-    outerColor = new HSL(
-      stage.mainHue + @hueShift*coef
-      blend(@outerSat[0], @outerSat[1], coef)
-      blend(@outerLum[0], @outerLum[1], coef)
-    )
+      grad = @ctx.createRadialGradient 0, 0, 0, 0, 0, 150
+      grad.addColorStop 0, innerColor.toString()
+      grad.addColorStop 1, outerColor.toString()
     
-    grad = @ctx.createRadialGradient 0, 0, 0, 0, 0, 150
-    grad.addColorStop 0, innerColor.toString()
-    grad.addColorStop 1, outerColor.toString()
-    
-    ctx.fillStyle = grad
-    ctx.fillRect -100, -100, 200, 200
+      ctx.fillStyle = grad
+      ctx.fillRect -100, -100, 200, 200

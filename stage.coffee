@@ -31,23 +31,26 @@ class @Stage
     , 0
       
     
-  refresh: =>
+  refresh: (newBeat = yes) =>
     Random.seed()
     
-    @beat   = new Beat(
+    if newBeat
+      @beat = new Beat(
                 parseFloat(document.getElementById('bpm').value)
                 parseFloat(document.getElementById('measure').value)
               ).start()
     
     @mainHue = Random.int 360
-    @sprites = []
+    @layers = []
     
     # Backdrop
-    @sprites.push new Backdrop()
+    @layers.push new Backdrop()
     
     # Beat sprites
     for i in [0..Random.int(1, 5, curve:Curve.low)]
-      @sprites = @sprites.concat Sprite.generate()
+      @layers = @layers.concat new Ripples()
+    
+    return
   
   render: =>
     @frames++
@@ -62,7 +65,7 @@ class @Stage
     @ctx.fillRect -100, -100, 200, 200
     
     # Render all sprites
-    sprite.render @ctx for sprite in @sprites
+    layer.render @ctx for layer in @layers
     
     # Schedule next render
     requestAnimFrame @render, canvas

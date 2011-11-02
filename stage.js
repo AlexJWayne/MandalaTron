@@ -20,32 +20,35 @@
         return this.render();
       }, this), 0);
     }
-    Stage.prototype.refresh = function() {
-      var i, _ref, _results;
+    Stage.prototype.refresh = function(newBeat) {
+      var i, _ref;
+      if (newBeat == null) {
+        newBeat = true;
+      }
       Random.seed();
-      this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
+      if (newBeat) {
+        this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
+      }
       this.mainHue = Random.int(360);
-      this.sprites = [];
-      this.sprites.push(new Backdrop());
-      _results = [];
+      this.layers = [];
+      this.layers.push(new Backdrop());
       for (i = 0, _ref = Random.int(1, 5, {
         curve: Curve.low
       }); 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        _results.push(this.sprites = this.sprites.concat(Sprite.generate()));
+        this.layers = this.layers.concat(new Ripples());
       }
-      return _results;
     };
     Stage.prototype.render = function() {
-      var sprite, _i, _len, _ref;
+      var layer, _i, _len, _ref;
       this.frames++;
       this.beat.update();
       this.ctx.clearRect(-100, -100, 200, 200);
       this.ctx.fillStyle = "hsl(" + this.mainHue + ", 75%, 25%)";
       this.ctx.fillRect(-100, -100, 200, 200);
-      _ref = this.sprites;
+      _ref = this.layers;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        sprite = _ref[_i];
-        sprite.render(this.ctx);
+        layer = _ref[_i];
+        layer.render(this.ctx);
       }
       return requestAnimFrame(this.render, canvas);
     };
