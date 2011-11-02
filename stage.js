@@ -26,6 +26,7 @@
         newBeat = true;
       }
       Random.seed();
+      document.getElementById('link').innerHTML = "" + (window.location.href.split('#')[0]) + "#" + (document.getElementById('seed').value);
       if (newBeat) {
         this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
       }

@@ -32,7 +32,8 @@ class @Stage
       
     
   refresh: (newBeat = yes) =>
-    Random.seed()
+    Random.seed()    
+    document.getElementById('link').innerHTML = "#{ window.location.href.split('#')[0] }##{ document.getElementById('seed').value }"
     
     if newBeat
       @beat = new Beat(
