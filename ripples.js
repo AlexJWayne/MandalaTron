@@ -28,10 +28,8 @@
           curve: Curve.low
         }),
         ngon: Random.int(3, 8),
-        twist: [0, Random.float(5, 45)].random() * [1, -1].random(),
-        lineCap: ['round', 'square', 'butt'].random({
-          curve: Curve.low
-        })
+        twist: Random.float(5, 45) * [1, -1].random(),
+        lineJoin: ['round', 'miter'].random()
       };
       this.elements = (function() {
         var _ref, _results;
@@ -96,6 +94,7 @@
         var elapsed, speed;
         ctx.globalAlpha = this.style.alpha;
         ctx.rotate(this.style.twist.deg2rad() * this.beat);
+        ctx.lineJoin = this.style.lineJoin;
         if (this.emphasis) {
           ctx.strokeStyle = this.style.emphasisColor;
           ctx.lineWidth = this.style.baseWidth * this.bps * 3 * this.style.emphasisSpeed;

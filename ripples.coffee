@@ -13,8 +13,8 @@ class @Ripples
       outward:        [yes, yes, no].random()
       shape:          ['circle', 'ngon'].random(curve:Curve.low)
       ngon:           Random.int(3, 8)
-      twist:          [0, Random.float(5, 45)].random() * [1, -1].random()
-      lineCap:        ['round', 'square', 'butt'].random(curve:Curve.low)
+      twist:          Random.float(5, 45) * [1, -1].random()
+      lineJoin:       ['round', 'miter'].random()
     
     @elements = for i in [0...stage.beat.perMeasure]
       new Ripple { style, beat: i }
@@ -58,7 +58,7 @@ class Ripple
     ctx.do =>
       ctx.globalAlpha = @style.alpha
       ctx.rotate @style.twist.deg2rad() * @beat
-      # ctx.lineCap = @style.lineCap # Why doesn't this work?
+      ctx.lineJoin = @style.lineJoin
     
       if @emphasis
         ctx.strokeStyle = @style.emphasisColor

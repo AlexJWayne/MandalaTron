@@ -33,6 +33,7 @@ extendPrototype CanvasRenderingContext2D,
   # Circles!
   circle: (x, y, radius) ->
     @arc x, y, radius, 0, Math.TAU
+    @closePath()
   
   fillCircle: (x, y, radius) ->
     @beginPath()

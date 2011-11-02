@@ -26,7 +26,8 @@
       return this.restore();
     },
     circle: function(x, y, radius) {
-      return this.arc(x, y, radius, 0, Math.TAU);
+      this.arc(x, y, radius, 0, Math.TAU);
+      return this.closePath();
     },
     fillCircle: function(x, y, radius) {
       this.beginPath();
