@@ -27,7 +27,7 @@
         shape: ['circle', 'ngon'].random({
           curve: Curve.low
         }),
-        ngon: Random.int(3, 7),
+        ngon: Random.int(3, 8),
         twist: [0, Random.float(5, 45)].random() * [1, -1].random(),
         lineCap: ['round', 'square', 'butt'].random({
           curve: Curve.low
@@ -96,7 +96,6 @@
         var elapsed, speed;
         ctx.globalAlpha = this.style.alpha;
         ctx.rotate(this.style.twist.deg2rad() * this.beat);
-        ctx.lineCap = this.style.lineCap;
         if (this.emphasis) {
           ctx.strokeStyle = this.style.emphasisColor;
           ctx.lineWidth = this.style.baseWidth * this.bps * 3 * this.style.emphasisSpeed;

@@ -12,7 +12,7 @@ class @Ripples
       alpha:          Random.float(0.35, 1, curve:Curve.high)
       outward:        [yes, yes, no].random()
       shape:          ['circle', 'ngon'].random(curve:Curve.low)
-      ngon:           Random.int(3, 7)
+      ngon:           Random.int(3, 8)
       twist:          [0, Random.float(5, 45)].random() * [1, -1].random()
       lineCap:        ['round', 'square', 'butt'].random(curve:Curve.low)
     
@@ -58,7 +58,7 @@ class Ripple
     ctx.do =>
       ctx.globalAlpha = @style.alpha
       ctx.rotate @style.twist.deg2rad() * @beat
-      ctx.lineCap = @style.lineCap # Why doesn't this work?
+      # ctx.lineCap = @style.lineCap # Why doesn't this work?
     
       if @emphasis
         ctx.strokeStyle = @style.emphasisColor
