@@ -2,6 +2,12 @@ class @Stage
   constructor: ->
     # Fetch canvas
     @canvas = document.getElementById 'canvas'
+    
+    # Size canvas
+    if document.body.clientWidth < @canvas.width
+      @canvas.width = @canvas.height = document.body.clientWidth
+    
+    # Fetch drawing context
     @ctx    = canvas.getContext '2d'
     
     # Center canvas bounds

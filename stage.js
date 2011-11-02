@@ -6,6 +6,9 @@
       this.showFps = __bind(this.showFps, this);
       this.render = __bind(this.render, this);
       this.refresh = __bind(this.refresh, this);      this.canvas = document.getElementById('canvas');
+      if (document.body.clientWidth < this.canvas.width) {
+        this.canvas.width = this.canvas.height = document.body.clientWidth;
+      }
       this.ctx = canvas.getContext('2d');
       this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
       this.ctx.scale(this.canvas.width / 200, this.canvas.height / 200);
