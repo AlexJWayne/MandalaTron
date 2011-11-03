@@ -54,6 +54,15 @@
         options = {};
       }
       return this[Random.int(0, this.length, options)];
+    },
+    blend: function(amount) {
+      if (this.length >= 2) {
+        return blend(this[0], this[1], amount);
+      } else if (this.length === 1) {
+        return this[0];
+      } else {
+        ;
+      }
     }
   });
   extendPrototype(Number, {

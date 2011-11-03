@@ -36,7 +36,7 @@
       for (i = 0, _ref = Random.int(1, 5, {
         curve: Curve.low
       }); 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        this.layers = this.layers.concat(new Ripples());
+        this.layers.push(new Ripples());
       }
     };
     Stage.prototype.render = function() {

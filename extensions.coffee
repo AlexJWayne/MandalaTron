@@ -57,6 +57,14 @@ extendPrototype CanvasRenderingContext2D,
 extendPrototype Array,
   random: (options = {}) ->
     this[Random.int 0, @length, options]
+  
+  blend: (amount) ->
+    if @length >= 2
+      blend this[0], this[1], amount
+    else if @length == 1
+      this[0]
+    else
+      return
 
 extendPrototype Number,
   

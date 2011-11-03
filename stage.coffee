@@ -49,7 +49,7 @@ class @Stage
     
     # Beat sprites
     for i in [0..Random.int(1, 5, curve:Curve.low)]
-      @layers = @layers.concat new Ripples()
+      @layers.push new Ripples()
     
     return
   
