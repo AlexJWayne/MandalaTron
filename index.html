@@ -31,11 +31,14 @@
   <body>
     <canvas id="canvas" width="800" height="800"></canvas>
     <form onsubmit="stage.refresh(); return false;">
+      <button onclick="document.getElementById('seed').value = ''; Random.seed(); stage.refresh(); return false;">
+        New Seed
+      </button>
       Seed:
       <input type="textfield" id="seed" value="">
       &nbsp;&nbsp;&nbsp;
       Beats/Minute:
-      <input type="textfield" id="bpm" value="90">
+      <input type="textfield" id="bpm" value="60">
       &nbsp;&nbsp;&nbsp;
       Beats/Measure:
       <input type="textfield" id="measure" value="4">
