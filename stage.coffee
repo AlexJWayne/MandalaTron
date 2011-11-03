@@ -8,7 +8,7 @@ class @Stage
       @canvas.width = @canvas.height = document.body.clientWidth
     
     # Fetch drawing context
-    @ctx    = canvas.getContext '2d'
+    @ctx = @canvas.getContext '2d'
     
     # Center canvas bounds
     @ctx.translate @canvas.width/2,   @canvas.height/2
