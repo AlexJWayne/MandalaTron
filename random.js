@@ -34,8 +34,20 @@
     linear: function(x) {
       return x;
     },
+    low2: function(x) {
+      return x * x;
+    },
+    low3: function(x) {
+      return x * x * x;
+    },
     low: function(x) {
       return x * x * x;
+    },
+    high2: function(x) {
+      return 1 - (1 - x) * (1 - x);
+    },
+    high3: function(x) {
+      return 1 - (1 - x) * (1 - x) * (1 - x);
     },
     high: function(x) {
       return 1 - (1 - x) * (1 - x) * (1 - x);

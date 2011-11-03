@@ -25,7 +25,11 @@
 
 @Curve =
   linear: (x) -> x
+  low2:   (x) -> x*x
+  low3:   (x) -> x*x*x
   low:    (x) -> x*x*x
+  high2:  (x) -> 1 - (1-x)*(1-x)
+  high3:  (x) -> 1 - (1-x)*(1-x)*(1-x)
   high:   (x) -> 1 - (1-x)*(1-x)*(1-x)
   
   test: (fn) ->
