@@ -19,7 +19,7 @@
           })
         ],
         beatColor: new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString(),
-        emphasisColor: new HSL(stage.mainHue + 180, 100, 50).toString(),
+        emphasisColor: new HSL(stage.mainHue + 180, Random.float(75, 100), 50).toString(),
         emphasisSpeed: Random.float(1, 2, {
           curve: Curve.low
         }),
@@ -32,7 +32,7 @@
         ngon: Random.int(3, 12),
         starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)],
         twist: Random.float(5, 45) * [1, -1].random(),
-        lineJoin: ['round', 'miter'].random()
+        lineJoin: ['round', 'miter', 'bevel'].random()
       };
       if (Random.float(1) < 0.25) {
         this.style.starRadiusDiff = [this.style.starRadiusDiff[0]];
@@ -90,9 +90,9 @@
           break;
         case 'ngon':
           for (i = 0, _ref = this.style.ngon; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
-            angle = i * Math.TAU / this.style.ngon;
+            angle = i * 360 / this.style.ngon;
             method = i === 0 ? 'moveTo' : 'lineTo';
-            ctx[method](radius * Math.cos(angle), radius * Math.sin(angle));
+            ctx[method].apply(ctx, polar2rect(radius, angle));
           }
           ctx.closePath();
           break;
@@ -100,13 +100,13 @@
           completion = (stage.beat.now - this.startedAt) / this.lifetime;
           points = this.style.ngon * 2;
           for (i = 0; 0 <= points ? i < points : i > points; 0 <= points ? i++ : i--) {
-            angle = i * Math.TAU / points;
+            angle = i * 360 / points;
             pRadius = radius;
             if (i % 2 === 0) {
               pRadius *= this.style.starRadiusDiff.blend(completion);
             }
             method = i === 0 ? 'moveTo' : 'lineTo';
-            ctx[method](pRadius * Math.cos(angle), pRadius * Math.sin(angle));
+            ctx[method].apply(ctx, polar2rect(pRadius, angle));
           }
           ctx.closePath();
       }

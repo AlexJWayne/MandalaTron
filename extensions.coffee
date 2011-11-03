@@ -22,6 +22,11 @@ window.now = -> new Date().getTime() / 1000
 window.blend = (start, end, amount) ->
   start * (1 - amount) + end * amount
 
+# Convert
+window.polar2rect = (r, a) ->
+  a = a.deg2rad()
+  [r * Math.cos(a), r * Math.sin(a)]
+
 # Enhance the 2d rendering context with some convenience methods
 extendPrototype CanvasRenderingContext2D,
   

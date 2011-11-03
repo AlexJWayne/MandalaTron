@@ -19,6 +19,10 @@
   window.blend = function(start, end, amount) {
     return start * (1 - amount) + end * amount;
   };
+  window.polar2rect = function(r, a) {
+    a = a.deg2rad();
+    return [r * Math.cos(a), r * Math.sin(a)];
+  };
   extendPrototype(CanvasRenderingContext2D, {
     "do": function(fn) {
       this.save();

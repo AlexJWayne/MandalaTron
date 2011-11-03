@@ -6,7 +6,7 @@ class @Ripples
       speed:          Random.float(160, 300, curve:Curve.low)
       baseWidth:      [Random.float(1, 8, curve:Curve.low), Random.float(1, 8, curve:Curve.low)]
       beatColor:      new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()
-      emphasisColor:  new HSL(stage.mainHue + 180, 100, 50).toString()
+      emphasisColor:  new HSL(stage.mainHue + 180, Random.float(75, 100), 50).toString()
       emphasisSpeed:  Random.float(1, 2, curve:Curve.low)
       motionCurve:    [Curve.low, Curve.high].random()
       alpha:          Random.float(0.35, 1, curve:Curve.high)
@@ -15,7 +15,7 @@ class @Ripples
       ngon:           Random.int(3, 12)
       starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)]
       twist:          Random.float(5, 45) * [1, -1].random()
-      lineJoin:       ['round', 'miter'].random()
+      lineJoin:       ['round', 'miter', 'bevel'].random()
     
     @style.starRadiusDiff = [@style.starRadiusDiff[0]] if Random.float(1) < 0.25
     
@@ -51,9 +51,9 @@ class Ripple
     
       when 'ngon'
         for i in [0...@style.ngon]
-          angle = i * Math.TAU / @style.ngon
+          angle = i * 360 / @style.ngon
           method = if i == 0 then 'moveTo' else 'lineTo'
-          ctx[method] radius*Math.cos(angle), radius*Math.sin(angle)
+          ctx[method] polar2rect(radius, angle)...
         ctx.closePath()
       
       when 'star'
@@ -61,12 +61,12 @@ class Ripple
         points = @style.ngon * 2
         
         for i in [0...points]
-          angle = i * Math.TAU / points
+          angle = i * 360 / points
           pRadius = radius
           pRadius *= @style.starRadiusDiff.blend(completion) if i % 2 == 0
           
           method = if i == 0 then 'moveTo' else 'lineTo'
-          ctx[method] pRadius*Math.cos(angle), pRadius*Math.sin(angle)
+          ctx[method] polar2rect(pRadius, angle)...
         ctx.closePath()
     
     ctx.stroke()

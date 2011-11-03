@@ -21,7 +21,7 @@
       }, this), 0);
     }
     Stage.prototype.refresh = function(newBeat) {
-      var i, _ref;
+      var i, klass, _ref;
       if (newBeat == null) {
         newBeat = true;
       }
@@ -36,7 +36,8 @@
       for (i = 0, _ref = Random.int(1, 5, {
         curve: Curve.low
       }); 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        this.layers.push(new Ripples());
+        klass = [Ripples, Lattice].random();
+        this.layers.push(new klass());
       }
     };
     Stage.prototype.render = function() {

@@ -47,9 +47,9 @@ class @Stage
     # Backdrop
     @layers.push new Backdrop()
     
-    # Beat sprites
     for i in [0..Random.int(1, 5, curve:Curve.low)]
-      @layers.push new Ripples()
+      klass = [Ripples, Lattice].random()
+      @layers.push new klass()    
     
     return
   
