@@ -6,6 +6,11 @@ extendPrototype = (base, methods) ->
 # Tau is more awesome than PI
 Math.TAU = Math.PI * 2
 
+Math.avg = (numbers...) ->
+  total = 0
+  total += n for n in numbers
+  total / numbers.length
+
 # requestAnimationFrame shim
 window.requestAnimFrame = do ->
   window.requestAnimationFrame       ||

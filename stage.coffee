@@ -65,12 +65,16 @@ class @Stage
     @ctx.fillStyle = "hsl(#{ @mainHue }, 75%, 25%)"
     @ctx.fillRect -100, -100, 200, 200
     
+    # @layers = [@layers[0], @layers[1]] # TEMP
+    
     # Render all sprites
     layer.render @ctx for layer in @layers
     
     # Schedule next render
     requestAnimFrame @render, canvas
-  
+    
+    # @stop() # TEMP
+      
   showFps: =>
     rightNow = now()
     fps = @frames / (rightNow - @start)

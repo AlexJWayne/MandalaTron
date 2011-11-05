@@ -1,5 +1,6 @@
 (function() {
   var extendPrototype;
+  var __slice = Array.prototype.slice;
   extendPrototype = function(base, methods) {
     var method, name;
     for (name in methods) {
@@ -8,6 +9,16 @@
     }
   };
   Math.TAU = Math.PI * 2;
+  Math.avg = function() {
+    var n, numbers, total, _i, _len;
+    numbers = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
+    total = 0;
+    for (_i = 0, _len = numbers.length; _i < _len; _i++) {
+      n = numbers[_i];
+      total += n;
+    }
+    return total / numbers.length;
+  };
   window.requestAnimFrame = (function() {
     return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame || function(callback, element) {
       return setTimeout(callback, 1000 / 60);
