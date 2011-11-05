@@ -52,6 +52,24 @@
     high: function(x) {
       return 1 - (1 - x) * (1 - x) * (1 - x);
     },
+    ease2: function(x) {
+      x *= 2;
+      if (x < 1) {
+        return 0.5 * x * x;
+      } else {
+        x -= 2;
+        return 0.5 * (x * x + 2);
+      }
+    },
+    ease3: function(x) {
+      x *= 2;
+      if (x < 1) {
+        return 0.5 * x * x * x;
+      } else {
+        x -= 2;
+        return 0.5 * (x * x * x + 2);
+      }
+    },
     test: function(fn) {
       var i;
       for (i = 0; i <= 1; i += 0.1) {
