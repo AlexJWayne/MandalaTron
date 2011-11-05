@@ -10,7 +10,7 @@ class @Lattice
       r: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()
       a: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()
     
-    step = 0.01
+    step = 0.01 + 0.03 * @twist.normalize(360, 45)
     @points = for i in [step...1] by step
       polar2rect @curves.r(i) * 150, @curves.a(i) * @twist
     
@@ -37,6 +37,7 @@ class @Lattice
   renderCurve: (ctx) ->
     ctx.beginPath()
     ctx.moveTo 0, 0
+    
     for i in [0..@points.length] by 2
       if @points[i] && @points[i+1]
         ctx.quadraticCurveTo @points[i]..., @points[i+1]...

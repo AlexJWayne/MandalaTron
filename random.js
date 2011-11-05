@@ -53,8 +53,8 @@
       return 1 - (1 - x) * (1 - x) * (1 - x);
     },
     test: function(fn) {
-      var i, _step;
-      for (i = 0, _step = 0.1; i <= 1; i += _step) {
+      var i;
+      for (i = 0; i <= 1; i += 0.1) {
         console.log("" + i + " => " + (fn(i)));
       }
     }

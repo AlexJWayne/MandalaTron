@@ -65,7 +65,7 @@
       } else if (this.length === 1) {
         return this[0];
       } else {
-        ;
+
       }
     }
   });

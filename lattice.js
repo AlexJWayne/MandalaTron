@@ -19,11 +19,11 @@
         r: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random(),
         a: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()
       };
-      step = 0.01;
+      step = 0.01 + 0.03 * this.twist.normalize(360, 45);
       this.points = (function() {
-        var _results, _step;
+        var _results;
         _results = [];
-        for (i = step, _step = step; step <= 1 ? i < 1 : i > 1; i += _step) {
+        for (i = step; step <= 1 ? i < 1 : i > 1; i += step) {
           _results.push(polar2rect(this.curves.r(i) * 150, this.curves.a(i) * this.twist));
         }
         return _results;
@@ -55,10 +55,10 @@
       }, this));
     };
     Lattice.prototype.renderCurve = function(ctx) {
-      var i, _ref, _step;
+      var i, _ref;
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      for (i = 0, _ref = this.points.length, _step = 2; 0 <= _ref ? i <= _ref : i >= _ref; i += _step) {
+      for (i = 0, _ref = this.points.length; i <= _ref; i += 2) {
         if (this.points[i] && this.points[i + 1]) {
           ctx.quadraticCurveTo.apply(ctx, __slice.call(this.points[i]).concat(__slice.call(this.points[i + 1])));
         }
