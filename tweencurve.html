@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TweenCurve</title>
+    <meta content='initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport'>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.js" type="text/javascript" charset="utf-8"></script>
+    <script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js" type="text/javascript" charset="utf-8"></script>
+    <script src="tweencurve.js" type="text/javascript" charset="utf-8"></script>
+    <style type="text/css" media="screen">
+      body {
+        text-align: center;
+        margin: 0;
+        font-family: Helvetica;
+        font-size: 12px;
+      }
+      
+      #wrapper {
+        width: 900px;
+        margin: 50px auto;
+      }
+      
+      h1 {
+        font-size: 32px;
+        color: #333;
+        margin: 0;
+      }
+      
+      h2 {
+        font-size: 20px;
+        color: #888;
+        font-weight: normal;
+        margin: 0 0 20px;
+      }
+      
+      h6 {
+        font-weight: normal;
+        font-size: 10px;
+        clear: both;
+      }
+      
+      ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+      }
+      
+      canvas {
+        margin: auto;
+        background: #666;
+      }
+      
+      li {
+        float: left;
+        width: 300px;
+        margin-bottom: 20px;
+      }
+      
+      li span {
+        display: block;
+      }
+      
+    </style>
+    <script type="text/coffeescript">
+      window.drawGraph = (name) ->
+        w = h = 200
+        canvas = $('<canvas>').attr(width:w, height:h)
+        $('ul#curves').append $('<li>').append(canvas).append("<span>#{ name }</span>")
+        
+        ctx = canvas[0].getContext '2d'
+        
+        # Draw Grid
+        ctx.strokeStyle = '#555'
+        ctx.lineWidth = 0.5
+        
+        ctx.beginPath()
+        for n in [0..w] by w / 10
+          ctx.moveTo n, 0
+          ctx.lineTo n, h
+          
+          ctx.moveTo 0, n
+          ctx.lineTo w, n
+        
+        ctx.stroke()
+        
+        # draw halfway lines
+        ctx.strokeStyle = '#444'
+        ctx.beginPath()
+        ctx.moveTo w/2, 0
+        ctx.lineTo w/2, h
+        ctx.moveTo 0, h/2
+        ctx.lineTo w, h/2
+        ctx.stroke()
+            
+            
+        
+        # Draw Curve
+        ctx.strokeStyle = '#bbb'
+        ctx.lineWidth = 3
+        
+        ctx.beginPath()
+        ctx.moveTo 0, 0
+        for i in [0..canvas.attr('width')]
+          curve = Curve[name]
+          y = curve 1 - i/canvas.attr('width')
+          ctx.lineTo i, y * canvas.attr('height')
+        ctx.stroke()
+          
+    </script>
+  </head>
+  <body>
+    <div id="wrapper">
+      <h1>TweenCurve</h1>
+      <h2>Easy Easing!</h2>
+      <ul id="curves"></ul>
+      <h6>
+        Math was blatantly stolen from <a href="http://gizma.com/easing/">http://gizma.com/easing/</a>.<br>
+        So thank you, whoever you are.
+      </h6>
+    </div>
+    <script type="text/coffeescript" charset="utf-8">
+      curves = ['In', 'Out', 'InOut']
+      maths  = ['Sine', 'Quad', 'Cubic', 'Quart', 'Quint', 'Expo', 'Circ']
+      
+      for math in maths
+        for curve in curves
+          drawGraph "ease#{ curve }#{ math }"
+      
+      drawGraph 'linear'
+      
+    </script>
+  </body>
+</html>
