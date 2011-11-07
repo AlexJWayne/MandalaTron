@@ -119,17 +119,17 @@
       }
     }
   };
-  this.Tween.low = this.Tween.low2 = this.Tween.easeOutQuad;
-  this.Tween.high = this.Tween.high2 = this.Tween.easeInQuad;
+  this.Tween.low = this.Tween.low2 = this.Tween.easeInQuad;
+  this.Tween.high = this.Tween.high2 = this.Tween.easeOutQuad;
   this.Tween.ease = this.Tween.ease2 = this.Tween.easeInOutQuad;
-  this.Tween.low3 = this.Tween.easeOutCubic;
-  this.Tween.high3 = this.Tween.easeInCubic;
+  this.Tween.low3 = this.Tween.easeInCubic;
+  this.Tween.high3 = this.Tween.easeOutCubic;
   this.Tween.ease3 = this.Tween.easeInOutCubic;
-  this.Tween.low4 = this.Tween.easeOutQuart;
-  this.Tween.high4 = this.Tween.easeInQuart;
+  this.Tween.low4 = this.Tween.easeInQuart;
+  this.Tween.high4 = this.Tween.easeOutQuart;
   this.Tween.ease4 = this.Tween.easeInOutQuart;
-  this.Tween.low5 = this.Tween.easeOutQuint;
-  this.Tween.high5 = this.Tween.easeInQuint;
+  this.Tween.low5 = this.Tween.easeInQuint;
+  this.Tween.high5 = this.Tween.easeOutQuint;
   this.Tween.ease5 = this.Tween.easeInOutQuint;
   this.Curve = {};
   _ref = this.Tween;

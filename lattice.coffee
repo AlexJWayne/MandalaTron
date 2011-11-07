@@ -6,7 +6,8 @@ class @Lattice
     @segments       = Random.int 3, 12
     @color          = new HSL((stage.mainHue + 180) % 360, Random.float(100), Random.float(100)).toString()
     @aplha          = Random.float 0.25, 1
-    @width          = Random.float(1, 10, curve: Curve.low)
+    @width          = Random.float(1, 8, curve: Curve.low3)
+    @alpha          = Random.float(0.35, 1)
     @curves =
       r: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()
       a: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()

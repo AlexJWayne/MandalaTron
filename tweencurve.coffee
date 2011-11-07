@@ -123,20 +123,20 @@
       c/2 * (Math.sqrt(1 - t*t) + 1) + b
 
 # Aliases
-@Tween.low   = @Tween.low2  = @Tween.easeOutQuad
-@Tween.high  = @Tween.high2 = @Tween.easeInQuad
+@Tween.low   = @Tween.low2  = @Tween.easeInQuad
+@Tween.high  = @Tween.high2 = @Tween.easeOutQuad
 @Tween.ease  = @Tween.ease2 = @Tween.easeInOutQuad
 
-@Tween.low3  = @Tween.easeOutCubic
-@Tween.high3 = @Tween.easeInCubic
+@Tween.low3  = @Tween.easeInCubic
+@Tween.high3 = @Tween.easeOutCubic
 @Tween.ease3 = @Tween.easeInOutCubic
 
-@Tween.low4  = @Tween.easeOutQuart
-@Tween.high4 = @Tween.easeInQuart
+@Tween.low4  = @Tween.easeInQuart
+@Tween.high4 = @Tween.easeOutQuart
 @Tween.ease4 = @Tween.easeInOutQuart
 
-@Tween.low5  = @Tween.easeOutQuint
-@Tween.high5 = @Tween.easeInQuint
+@Tween.low5  = @Tween.easeInQuint
+@Tween.high5 = @Tween.easeOutQuint
 @Tween.ease5 = @Tween.easeInOutQuint
 
 @Curve = {}

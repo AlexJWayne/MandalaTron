@@ -101,7 +101,7 @@
         ctx.moveTo 0, 0
         for i in [0..canvas.attr('width')]
           curve = Curve[name]
-          y = curve 1 - i/canvas.attr('width')
+          y = 1 - curve i/canvas.attr('width')
           ctx.lineTo i, y * canvas.attr('height')
         ctx.stroke()
           
