@@ -1,16 +1,13 @@
 @Random =
   seed: ->
-    seedField = document.getElementById('seed')
+    @seedValue =
+      if window.location.hash
+        window.location.hash[1..-1]
+      else
+        Math.floor Math.random() * 1000000
     
-    if window.location.hash
-      seedField.value = window.location.hash[1..-1]
+    Math.seedrandom @seedValue.toString()
     
-    if seedField.value
-      Math.seedrandom seedField.value
-    else
-      seed = Math.floor Math.random() * 1000000
-      Math.seedrandom seed.toString()
-      seedField.value = seed
   
   float: (min, max, options = {}) ->
     curve = options.curve || Curve.linear

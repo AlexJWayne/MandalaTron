@@ -25,17 +25,21 @@ class @Stage
       # Create actors
       @refresh()
       
+      # Set seed link
+      document.getElementById('link').innerHTML = "#{ window.location.href.split('#')[0] }##{ Random.seedValue }"
+      
       # Start the render loop
       @render()
       
     , 0
       
     
-  refresh: (newBeat = yes) =>
-    Random.seed()    
-    document.getElementById('link').innerHTML = "#{ window.location.href.split('#')[0] }##{ document.getElementById('seed').value }"
+  refresh: (options = {}) =>
     
-    if newBeat
+    if options.randomize or !Random.seedValue?
+      Random.seed()
+    
+    if options.beat or !@beat?
       @beat = new Beat(
                 parseFloat(document.getElementById('bpm').value)
                 parseFloat(document.getElementById('measure').value)
@@ -49,9 +53,12 @@ class @Stage
     
     for i in [0..Random.int(1, 5, curve:Curve.low)]
       klass = [Ripples, Lattice].random()
-      @layers.push new klass()    
+      @layers.push new klass()
     
-    return
+    clearTimeout @swapTimeout if @swapTimeout
+    @swapTimeout = setTimeout =>
+      @refresh randomize: yes, beat: no if document.getElementById('cycle').checked
+    , @beat.perMeasure/@beat.bps * 4 * 1000
   
   render: =>
     @frames++
@@ -65,15 +72,11 @@ class @Stage
     @ctx.fillStyle = "hsl(#{ @mainHue }, 75%, 25%)"
     @ctx.fillRect -100, -100, 200, 200
     
-    # @layers = [@layers[0], @layers[1]] # TEMP
-    
     # Render all sprites
     layer.render @ctx for layer in @layers
     
     # Schedule next render
     requestAnimFrame @render, canvas
-    
-    # @stop() # TEMP
       
   showFps: =>
     rightNow = now()

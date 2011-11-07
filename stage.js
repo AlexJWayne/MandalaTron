@@ -17,17 +17,19 @@
       setInterval(this.showFps, 5000);
       setTimeout(__bind(function() {
         this.refresh();
+        document.getElementById('link').innerHTML = "" + (window.location.href.split('#')[0]) + "#" + Random.seedValue;
         return this.render();
       }, this), 0);
     }
-    Stage.prototype.refresh = function(newBeat) {
+    Stage.prototype.refresh = function(options) {
       var i, klass, _ref;
-      if (newBeat == null) {
-        newBeat = true;
+      if (options == null) {
+        options = {};
       }
-      Random.seed();
-      document.getElementById('link').innerHTML = "" + (window.location.href.split('#')[0]) + "#" + (document.getElementById('seed').value);
-      if (newBeat) {
+      if (options.randomize || !(Random.seedValue != null)) {
+        Random.seed();
+      }
+      if (options.beat || !(this.beat != null)) {
         this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
       }
       this.mainHue = Random.int(360);
@@ -39,6 +41,15 @@
         klass = [Ripples, Lattice].random();
         this.layers.push(new klass());
       }
+      if (this.swapTimeout) {
+        clearTimeout(this.swapTimeout);
+      }
+      return this.swapTimeout = setTimeout(__bind(function() {
+        return this.refresh({
+          randomize: true,
+          beat: document.getElementById('cycle').checked ? false : void 0
+        });
+      }, this), this.beat.perMeasure / this.beat.bps * 4 * 1000);
     };
     Stage.prototype.render = function() {
       var layer, _i, _len, _ref;
