@@ -12,9 +12,9 @@
           curve: Curve.low
         }),
         baseWidth: [
-          Random.float(1, 8, {
+          Random.float(0.5, 12, {
             curve: Curve.low
-          }), Random.float(1, 8, {
+          }), Random.float(0.5, 12, {
             curve: Curve.low
           })
         ],
@@ -32,7 +32,9 @@
         ngon: Random.int(3, 12),
         starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)],
         twist: Random.float(5, 45) * [1, -1].random(),
-        lineJoin: ['round', 'miter', 'bevel'].random()
+        lineJoin: ['round', 'miter', 'bevel'].random(),
+        swell: Random.float(0.8, 1.2),
+        swellPoint: Random.float(0.1, 0.9)
       };
       if (Random.float(1) < 0.25) {
         this.style.starRadiusDiff = [this.style.starRadiusDiff[0]];
@@ -134,15 +136,31 @@
           ctx.globalAlpha = this.style.alpha;
           ctx.rotate(this.style.twist.deg2rad() * this.beat);
           ctx.lineJoin = this.style.lineJoin;
-          if (this.emphasis) {
-            ctx.strokeStyle = this.style.emphasisColor;
-            ctx.lineWidth = this.style.baseWidth.blend(completion) * this.bps * 3 * this.style.emphasisSpeed;
-          } else {
-            ctx.strokeStyle = this.style.beatColor;
-            ctx.lineWidth = this.style.baseWidth.blend(completion) * this.bps;
-          }
+          this.setupStroke(ctx, completion);
           return this.drawShape(ctx, speed);
         }, this));
+      }
+    };
+    Ripple.prototype.setupStroke = function(ctx, completion) {
+      if (this.emphasis) {
+        ctx.strokeStyle = this.style.emphasisColor;
+        ctx.lineWidth = this.style.baseWidth.blend(completion) * this.bps * 3 * this.style.emphasisSpeed;
+      } else {
+        ctx.strokeStyle = this.style.beatColor;
+        ctx.lineWidth = this.style.baseWidth.blend(completion) * this.bps;
+      }
+      return this.swell(ctx);
+    };
+    Ripple.prototype.swell = function(ctx) {
+      var beatProgress;
+      if (this.style.swell !== 1) {
+        beatProgress = stage.beat.beatProgress();
+        if (beatProgress < this.style.swellPoint) {
+          beatProgress = beatProgress.normalize(0, this.style.swellPoint);
+        } else {
+          beatProgress = beatProgress.normalize(1, this.style.swellPoint);
+        }
+        return ctx.lineWidth += ctx.lineWidth * this.style.swell * beatProgress;
       }
     };
     return Ripple;
