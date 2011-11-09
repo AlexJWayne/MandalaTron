@@ -1,7 +1,8 @@
 (function() {
-  var fn, name, _fn, _ref;
+  var Curve, Tween, fn, name, scope, _fn;
   var __hasProp = Object.prototype.hasOwnProperty;
-  this.Tween = {
+
+  Tween = {
     linear: function(t, b, c, d) {
       return c * t / d + b;
     },
@@ -119,28 +120,54 @@
       }
     }
   };
-  this.Tween.low = this.Tween.low2 = this.Tween.easeInQuad;
-  this.Tween.high = this.Tween.high2 = this.Tween.easeOutQuad;
-  this.Tween.ease = this.Tween.ease2 = this.Tween.easeInOutQuad;
-  this.Tween.low3 = this.Tween.easeInCubic;
-  this.Tween.high3 = this.Tween.easeOutCubic;
-  this.Tween.ease3 = this.Tween.easeInOutCubic;
-  this.Tween.low4 = this.Tween.easeInQuart;
-  this.Tween.high4 = this.Tween.easeOutQuart;
-  this.Tween.ease4 = this.Tween.easeInOutQuart;
-  this.Tween.low5 = this.Tween.easeInQuint;
-  this.Tween.high5 = this.Tween.easeOutQuint;
-  this.Tween.ease5 = this.Tween.easeInOutQuint;
-  this.Curve = {};
-  _ref = this.Tween;
+
+  Tween.low = Tween.easeInSine;
+
+  Tween.high = Tween.easeOutSine;
+
+  Tween.ease = Tween.easeInOutSine;
+
+  Tween.low2 = Tween.easeInQuad;
+
+  Tween.high2 = Tween.easeOutQuad;
+
+  Tween.ease2 = Tween.easeInOutQuad;
+
+  Tween.low3 = Tween.easeInCubic;
+
+  Tween.high3 = Tween.easeOutCubic;
+
+  Tween.ease3 = Tween.easeInOutCubic;
+
+  Tween.low4 = Tween.easeInQuart;
+
+  Tween.high4 = Tween.easeOutQuart;
+
+  Tween.ease4 = Tween.easeInOutQuart;
+
+  Tween.low5 = Tween.easeInQuint;
+
+  Tween.high5 = Tween.easeOutQuint;
+
+  Tween.ease5 = Tween.easeInOutQuint;
+
+  Curve = {};
+
   _fn = function(name, fn) {
-    return this.Curve[name] = function(n) {
+    return Curve[name] = function(n) {
       return fn(n, 0, 1, 1);
     };
   };
-  for (name in _ref) {
-    if (!__hasProp.call(_ref, name)) continue;
-    fn = _ref[name];
+  for (name in Tween) {
+    if (!__hasProp.call(Tween, name)) continue;
+    fn = Tween[name];
     _fn(name, fn);
   }
+
+  scope = window || module.exports;
+
+  scope.Tween = Tween;
+
+  scope.Curve = Curve;
+
 }).call(this);

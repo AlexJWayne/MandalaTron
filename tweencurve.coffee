@@ -3,7 +3,7 @@
 #     http://gizma.com/easing/
 #
 
-@Tween =
+Tween =
   # LINEAR
   linear: (t, b, c, d) ->
     c*t/d + b
@@ -123,24 +123,33 @@
       c/2 * (Math.sqrt(1 - t*t) + 1) + b
 
 # Aliases
-@Tween.low   = @Tween.low2  = @Tween.easeInQuad
-@Tween.high  = @Tween.high2 = @Tween.easeOutQuad
-@Tween.ease  = @Tween.ease2 = @Tween.easeInOutQuad
+Tween.low   = Tween.easeInSine
+Tween.high  = Tween.easeOutSine
+Tween.ease  = Tween.easeInOutSine
+              
+Tween.low2  = Tween.easeInQuad
+Tween.high2 = Tween.easeOutQuad
+Tween.ease2 = Tween.easeInOutQuad
+              
+Tween.low3  = Tween.easeInCubic
+Tween.high3 = Tween.easeOutCubic
+Tween.ease3 = Tween.easeInOutCubic
+              
+Tween.low4  = Tween.easeInQuart
+Tween.high4 = Tween.easeOutQuart
+Tween.ease4 = Tween.easeInOutQuart
+              
+Tween.low5  = Tween.easeInQuint
+Tween.high5 = Tween.easeOutQuint
+Tween.ease5 = Tween.easeInOutQuint
 
-@Tween.low3  = @Tween.easeInCubic
-@Tween.high3 = @Tween.easeOutCubic
-@Tween.ease3 = @Tween.easeInOutCubic
-
-@Tween.low4  = @Tween.easeInQuart
-@Tween.high4 = @Tween.easeOutQuart
-@Tween.ease4 = @Tween.easeInOutQuart
-
-@Tween.low5  = @Tween.easeInQuint
-@Tween.high5 = @Tween.easeOutQuint
-@Tween.ease5 = @Tween.easeInOutQuint
-
-@Curve = {}
-for own name, fn of @Tween
+# Setup Curve
+Curve = {}
+for own name, fn of Tween
   do (name, fn) ->
-    @Curve[name] = (n) ->
+    Curve[name] = (n) ->
       fn n, 0, 1, 1
+
+scope = window || module.exports
+scope.Tween = Tween
+scope.Curve = Curve

@@ -1,6 +1,6 @@
-(function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   this.Backdrop = (function() {
+
     function Backdrop() {
       this.ctx = stage.ctx;
       this.hueShift = Random.int(0, 90, {
@@ -24,23 +24,24 @@
       this.outerLum = [Random.int(0, 100), Random.int(0, 100)];
       this.coefCurve = [Curve.low, Curve.high].random();
     }
+
     Backdrop.prototype.render = function(ctx) {
-      if (ctx == null) {
-        ctx = this.ctx;
-      }
-      return ctx["do"](__bind(function() {
+      var _this = this;
+      if (ctx == null) ctx = this.ctx;
+      return ctx["do"](function() {
         var coef, grad, innerColor, min, outerColor;
         ctx.globalAlpha = 1.0;
-        coef = stage.beat.beat() === 0 ? this.coefCurve(1 - stage.beat.beatProgress()) : (min = 1 / stage.beat.perMeasure, this.coefCurve(stage.beat.measureProgress().normalize(1 / stage.beat.perMeasure, 1)));
-        innerColor = new HSL(stage.mainHue + this.hueShift * coef, blend(this.innerSat[0], this.innerSat[1], coef), blend(this.innerLum[0], this.innerLum[1], coef));
-        outerColor = new HSL(stage.mainHue + this.hueShift * coef, blend(this.outerSat[0], this.outerSat[1], coef), blend(this.outerLum[0], this.outerLum[1], coef));
-        grad = this.ctx.createRadialGradient(0, 0, 0, 0, 0, 150);
+        coef = stage.beat.beat() === 0 ? _this.coefCurve(1 - stage.beat.beatProgress()) : (min = 1 / stage.beat.perMeasure, _this.coefCurve(stage.beat.measureProgress().normalize(1 / stage.beat.perMeasure, 1)));
+        innerColor = new HSL(stage.mainHue + _this.hueShift * coef, blend(_this.innerSat[0], _this.innerSat[1], coef), blend(_this.innerLum[0], _this.innerLum[1], coef));
+        outerColor = new HSL(stage.mainHue + _this.hueShift * coef, blend(_this.outerSat[0], _this.outerSat[1], coef), blend(_this.outerLum[0], _this.outerLum[1], coef));
+        grad = _this.ctx.createRadialGradient(0, 0, 0, 0, 0, 150);
         grad.addColorStop(0, innerColor.toString());
         grad.addColorStop(1, outerColor.toString());
         ctx.fillStyle = grad;
         return ctx.fillRect(-100, -100, 200, 200);
-      }, this));
+      });
     };
+
     return Backdrop;
+
   })();
-}).call(this);

@@ -1,11 +1,15 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+
   this.Stage = (function() {
+
     function Stage() {
       this.stop = __bind(this.stop, this);
       this.showFps = __bind(this.showFps, this);
       this.render = __bind(this.render, this);
-      this.refresh = __bind(this.refresh, this);      this.canvas = document.getElementById('canvas');
+      this.refresh = __bind(this.refresh, this);
+      var _this = this;
+      this.canvas = document.getElementById('canvas');
       if (document.body.clientWidth < this.canvas.width) {
         this.canvas.width = this.canvas.height = document.body.clientWidth;
       }
@@ -15,20 +19,18 @@
       this.frames = 0;
       this.start = now();
       setInterval(this.showFps, 5000);
-      setTimeout(__bind(function() {
-        this.refresh();
+      setTimeout(function() {
+        _this.refresh();
         document.getElementById('link').innerHTML = "" + (window.location.href.split('#')[0]) + "#" + Random.seedValue;
-        return this.render();
-      }, this), 0);
+        return _this.render();
+      }, 0);
     }
+
     Stage.prototype.refresh = function(options) {
       var i, klass, _ref;
-      if (options == null) {
-        options = {};
-      }
-      if (options.randomize || !(Random.seedValue != null)) {
-        Random.seed();
-      }
+      var _this = this;
+      if (options == null) options = {};
+      if (options.randomize || !(Random.seedValue != null)) Random.seed();
       if (options.beat || !(this.beat != null)) {
         this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
       }
@@ -41,16 +43,15 @@
         klass = [Ripples, Lattice].random();
         this.layers.push(new klass());
       }
-      if (this.swapTimeout) {
-        clearTimeout(this.swapTimeout);
-      }
-      return this.swapTimeout = setTimeout(__bind(function() {
-        return this.refresh({
+      if (this.swapTimeout) clearTimeout(this.swapTimeout);
+      return this.swapTimeout = setTimeout(function() {
+        return _this.refresh({
           randomize: true,
           beat: document.getElementById('cycle').checked ? false : void 0
         });
-      }, this), this.beat.perMeasure / this.beat.bps * 4 * 1000);
+      }, this.beat.perMeasure / this.beat.bps * 4 * 1000);
     };
+
     Stage.prototype.render = function() {
       var layer, _i, _len, _ref;
       this.frames++;
@@ -65,6 +66,7 @@
       }
       return requestAnimFrame(this.render, canvas);
     };
+
     Stage.prototype.showFps = function() {
       var fps, rightNow;
       rightNow = now();
@@ -73,9 +75,13 @@
       this.frames = 0;
       return this.start = rightNow;
     };
+
     Stage.prototype.stop = function() {
       return this.render = this.showFps = function() {};
     };
+
     return Stage;
+
   })();
+
 }).call(this);

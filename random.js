@@ -1,4 +1,4 @@
-(function() {
+
   this.Random = {
     seed: function() {
       this.seedValue = window.location.hash ? window.location.hash.slice(1) : Math.floor(Math.random() * 1000000);
@@ -6,9 +6,7 @@
     },
     float: function(min, max, options) {
       var curve;
-      if (options == null) {
-        options = {};
-      }
+      if (options == null) options = {};
       curve = options.curve || Curve.linear;
       if (max == null) {
         max = min;
@@ -20,4 +18,3 @@
       return Math.floor(this.float.apply(this, arguments));
     }
   };
-}).call(this);

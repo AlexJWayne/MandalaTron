@@ -1,6 +1,8 @@
 (function() {
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  var __slice = Array.prototype.slice;
+
   this.Lattice = (function() {
+
     function Lattice() {
       var i, next, point, step, _ref;
       this.rotation = Random.float(10, 60, {
@@ -42,33 +44,38 @@
         }
       }
     }
+
     Lattice.prototype.render = function(ctx) {
-      return ctx["do"](__bind(function() {
-        ctx.rotate((this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
-        this.renderFan(ctx);
-        return ctx["do"](__bind(function() {
+      var _this = this;
+      return ctx["do"](function() {
+        ctx.rotate((_this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
+        _this.renderFan(ctx);
+        return ctx["do"](function() {
           ctx.scale(-1, 1);
-          return this.renderFan(ctx);
-        }, this));
-      }, this));
+          return _this.renderFan(ctx);
+        });
+      });
     };
+
     Lattice.prototype.renderFan = function(ctx) {
-      return ctx["do"](__bind(function() {
+      var _this = this;
+      return ctx["do"](function() {
         var curvedProgression, i, _ref, _results;
         curvedProgression = stage.beat.beatProgress();
-        curvedProgression = this.twistBeatCurve(curvedProgression);
-        ctx.rotate(Math.TAU / this.segments * curvedProgression);
-        ctx.strokeStyle = this.color;
-        ctx.lineWidth = this.width;
-        ctx.globalAlpha = this.alpha;
+        curvedProgression = _this.twistBeatCurve(curvedProgression);
+        ctx.rotate(Math.TAU / _this.segments * curvedProgression);
+        ctx.strokeStyle = _this.color;
+        ctx.lineWidth = _this.width;
+        ctx.globalAlpha = _this.alpha;
         _results = [];
-        for (i = 0, _ref = this.segments; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
-          this.renderCurve(ctx);
-          _results.push(ctx.rotate(Math.TAU / this.segments));
+        for (i = 0, _ref = _this.segments; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
+          _this.renderCurve(ctx);
+          _results.push(ctx.rotate(Math.TAU / _this.segments));
         }
         return _results;
-      }, this));
+      });
     };
+
     Lattice.prototype.renderCurve = function(ctx) {
       var i, _ref;
       ctx.beginPath();
@@ -78,6 +85,9 @@
       }
       return ctx.stroke();
     };
+
     return Lattice;
+
   })();
+
 }).call(this);
