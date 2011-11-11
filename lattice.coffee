@@ -1,5 +1,6 @@
 class @Lattice
   constructor: ->
+    # @rotOffset      = Random.float(10)
     @rotation       = Random.float(10, 60, curve:Curve.low) * [1, -1].random()
     @twist          = Random.float(30, 360, curve: Curve.low2) * [1, -1].random()
     @twistBeatCurve = [Curve.linear, Curve.ease2, Curve.ease3].random(curve:Curve.low2)

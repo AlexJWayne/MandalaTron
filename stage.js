@@ -46,11 +46,13 @@
         this.layers.push(new klass());
       }
       if (this.swapTimeout) clearTimeout(this.swapTimeout);
-      return this.swapTimeout = setTimeout(function() {
-        return _this.refresh({
-          randomize: true,
-          beat: document.getElementById('cycle').checked ? false : void 0
-        });
+      return this.swapTimeout = setInterval(function() {
+        if (document.getElementById('cycle').checked) {
+          return _this.refresh({
+            randomize: true,
+            beat: false
+          });
+        }
       }, this.beat.perMeasure / this.beat.bps * 4 * 1000);
     };
 

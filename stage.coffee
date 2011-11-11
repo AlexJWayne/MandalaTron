@@ -57,8 +57,9 @@ class @Stage
       @layers.push new klass()
     
     clearTimeout @swapTimeout if @swapTimeout
-    @swapTimeout = setTimeout =>
-      @refresh randomize: yes, beat: no if document.getElementById('cycle').checked
+    @swapTimeout = setInterval =>
+      if document.getElementById('cycle').checked
+        @refresh randomize: yes, beat: no
     , @beat.perMeasure/@beat.bps * 4 * 1000
   
   render: =>
