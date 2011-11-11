@@ -13,7 +13,7 @@ class @Stage
     # Center canvas bounds
     aspect = @canvas.width / @canvas.height
     @ctx.translate @canvas.width / 2,   @canvas.height / 2
-    @ctx.scale     @canvas.width / (200), @canvas.height / (200 / aspect)
+    @ctx.scale     @canvas.width / 200, @canvas.height / (200 / aspect)
     
     # Setup timings
     @frames = 0
