@@ -5,8 +5,7 @@ class @Stage
     
     # Size canvas
     if document.body.clientWidth < @canvas.width
-      @canvas.width  = document.body.clientWidth
-      @canvas.height = document.body.clientHeight
+      @canvas.width = @canvas.height = document.body.clientWidth
     
     # Fetch drawing context
     @ctx = @canvas.getContext '2d'
