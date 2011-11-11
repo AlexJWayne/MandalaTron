@@ -8,14 +8,17 @@
       this.showFps = __bind(this.showFps, this);
       this.render = __bind(this.render, this);
       this.refresh = __bind(this.refresh, this);
+      var aspect;
       var _this = this;
       this.canvas = document.getElementById('canvas');
       if (document.body.clientWidth < this.canvas.width) {
-        this.canvas.width = this.canvas.height = document.body.clientWidth;
+        this.canvas.width = document.body.clientWidth;
+        this.canvas.height = document.body.clientHeight;
       }
       this.ctx = this.canvas.getContext('2d');
+      aspect = this.canvas.width / this.canvas.height;
       this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
-      this.ctx.scale(this.canvas.width / 200, this.canvas.height / 200);
+      this.ctx.scale(this.canvas.width / 200., this.canvas.height / (200 / aspect));
       this.frames = 0;
       this.start = now();
       setInterval(this.showFps, 5000);

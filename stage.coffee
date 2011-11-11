@@ -5,14 +5,16 @@ class @Stage
     
     # Size canvas
     if document.body.clientWidth < @canvas.width
-      @canvas.width = @canvas.height = document.body.clientWidth
+      @canvas.width  = document.body.clientWidth
+      @canvas.height = document.body.clientHeight
     
     # Fetch drawing context
     @ctx = @canvas.getContext '2d'
     
     # Center canvas bounds
-    @ctx.translate @canvas.width/2,   @canvas.height/2
-    @ctx.scale     @canvas.width/200, @canvas.height/200
+    aspect = @canvas.width / @canvas.height
+    @ctx.translate @canvas.width / 2,   @canvas.height / 2
+    @ctx.scale     @canvas.width / (200), @canvas.height / (200 / aspect)
     
     # Setup timings
     @frames = 0
