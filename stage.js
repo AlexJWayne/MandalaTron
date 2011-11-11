@@ -42,7 +42,7 @@
       for (i = 0, _ref = Random.int(1, 5, {
         curve: Curve.low
       }); 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        klass = [Ripples, Lattice].random();
+        klass = [Ripples, Lattice, Particles].random();
         this.layers.push(new klass());
       }
       if (this.swapTimeout) clearTimeout(this.swapTimeout);

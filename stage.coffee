@@ -53,8 +53,10 @@ class @Stage
     @layers.push new Backdrop()
     
     for i in [0..Random.int(1, 5, curve:Curve.low)]
-      klass = [Ripples, Lattice].random()
+      klass = [Ripples, Lattice, Particles].random()
       @layers.push new klass()
+    
+    # @layers = [new Particles()]
     
     clearTimeout @swapTimeout if @swapTimeout
     @swapTimeout = setInterval =>
