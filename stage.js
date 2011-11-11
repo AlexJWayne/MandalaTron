@@ -39,9 +39,7 @@
       this.mainHue = Random.int(360);
       this.layers = [];
       this.layers.push(new Backdrop());
-      for (i = 0, _ref = Random.int(1, 5, {
-        curve: Curve.low
-      }); 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+      for (i = 0, _ref = Random.int(3, 6); 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
         klass = [Ripples, Lattice, Particles].random();
         this.layers.push(new klass());
       }

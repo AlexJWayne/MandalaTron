@@ -52,7 +52,7 @@ class @Stage
     # Backdrop
     @layers.push new Backdrop()
     
-    for i in [0..Random.int(1, 5, curve:Curve.low)]
+    for i in [0..Random.int(3, 6)]
       klass = [Ripples, Lattice, Particles].random()
       @layers.push new klass()
     

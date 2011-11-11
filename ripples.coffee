@@ -4,7 +4,7 @@ class @Ripples
     
     @style =
       speed:          Random.float(160, 300, curve:Curve.low)
-      baseWidth:      [Random.float(0.5, 12, curve:Curve.low), Random.float(0.5, 12, curve:Curve.low)]
+      baseWidth:      [Random.float(0.5, 10, curve:Curve.low), Random.float(0.5, 10, curve:Curve.low)]
       beatColor:      new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()
       emphasisColor:  new HSL(stage.mainHue + 180, Random.float(75, 100), 50).toString()
       emphasisSpeed:  Random.float(1, 2, curve:Curve.low)
@@ -114,11 +114,11 @@ class Ripple
   setupStroke: (ctx, completion) ->
     if @emphasis
       ctx.strokeStyle = @style.emphasisColor
-      ctx.lineWidth   = @style.baseWidth.blend(completion) * @bps * 3 * @style.emphasisSpeed
+      ctx.lineWidth   = @style.baseWidth.blend(completion) * 2 * @style.emphasisSpeed
       
     else
       ctx.strokeStyle = @style.beatColor
-      ctx.lineWidth   = @style.baseWidth.blend(completion) * @bps
+      ctx.lineWidth   = @style.baseWidth.blend(completion)
     
     @swell ctx
   

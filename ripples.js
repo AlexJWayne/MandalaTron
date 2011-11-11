@@ -13,9 +13,9 @@
           curve: Curve.low
         }),
         baseWidth: [
-          Random.float(0.5, 12, {
+          Random.float(0.5, 10, {
             curve: Curve.low
-          }), Random.float(0.5, 12, {
+          }), Random.float(0.5, 10, {
             curve: Curve.low
           })
         ],
@@ -167,10 +167,10 @@
     Ripple.prototype.setupStroke = function(ctx, completion) {
       if (this.emphasis) {
         ctx.strokeStyle = this.style.emphasisColor;
-        ctx.lineWidth = this.style.baseWidth.blend(completion) * this.bps * 3 * this.style.emphasisSpeed;
+        ctx.lineWidth = this.style.baseWidth.blend(completion) * 2 * this.style.emphasisSpeed;
       } else {
         ctx.strokeStyle = this.style.beatColor;
-        ctx.lineWidth = this.style.baseWidth.blend(completion) * this.bps;
+        ctx.lineWidth = this.style.baseWidth.blend(completion);
       }
       return this.swell(ctx);
     };
