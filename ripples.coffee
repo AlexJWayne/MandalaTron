@@ -9,13 +9,16 @@ class @Ripples
       emphasisColor:  new HSL(stage.mainHue + 180, Random.float(75, 100), 50).toString()
       emphasisSpeed:  Random.float(1, 2, curve:Curve.low)
       motionCurve:    [Curve.low, Curve.high].random()
-      alpha:          Random.float(0.35, 1, curve:Curve.high)
+      alpha:          Random.float(0.35, 1, curve:Curve.high2)
       outward:        [yes, yes, no].random()
       shape:          ['circle', 'ngon', 'star'].random()
       ngon:           Random.int(3, 12)
       starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)]
       twist:          Random.float(5, 45) * [1, -1].random()
       lineJoin:       ['round', 'miter', 'bevel'].random()
+      echoes:         Random.int(0, 5, curve:Curve.low3)
+      echoDepth:      [1, Random.float(1, 1.5, curve:Curve.low)].random(curve:Curve.low) * [-1, 1].random()
+      
       
       # Stroke swell
       swell:          Random.float(0.8, 1.2)
@@ -46,9 +49,14 @@ class Ripple
     
     @startedAt  = stage.beat.startedAt - (@offset * @lifetime)
   
-  drawShape: (ctx, radius) ->
+  drawShape: (ctx, radius, echo) ->
     return if radius < 0
     ctx.beginPath()
+    
+    # Style echoes
+    radius += echo * ctx.lineWidth * @style.echoDepth
+    radius = 0 if radius < 0
+    ctx.globalAlpha = @style.alpha * Curve.low((@style.echoes - echo) / @style.echoes)
     
     switch @style.shape
       when 'circle'
@@ -100,7 +108,8 @@ class Ripple
         
         @setupStroke ctx, completion
         
-        @drawShape ctx, speed
+        for echo in [0..(@style.echoes + 1)]
+          @drawShape ctx, speed, echo
   
   setupStroke: (ctx, completion) ->
     if @emphasis

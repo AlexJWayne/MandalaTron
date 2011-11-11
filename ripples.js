@@ -26,7 +26,7 @@
         }),
         motionCurve: [Curve.low, Curve.high].random(),
         alpha: Random.float(0.35, 1, {
-          curve: Curve.high
+          curve: Curve.high2
         }),
         outward: [true, true, false].random(),
         shape: ['circle', 'ngon', 'star'].random(),
@@ -34,6 +34,16 @@
         starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)],
         twist: Random.float(5, 45) * [1, -1].random(),
         lineJoin: ['round', 'miter', 'bevel'].random(),
+        echoes: Random.int(0, 5, {
+          curve: Curve.low3
+        }),
+        echoDepth: [
+          1, Random.float(1, 1.5, {
+            curve: Curve.low
+          })
+        ].random({
+          curve: Curve.low
+        }) * [-1, 1].random(),
         swell: Random.float(0.8, 1.2),
         swellPoint: Random.float(0.1, 0.9)
       };
@@ -86,10 +96,13 @@
       this.startedAt = stage.beat.startedAt - (this.offset * this.lifetime);
     }
 
-    Ripple.prototype.drawShape = function(ctx, radius) {
+    Ripple.prototype.drawShape = function(ctx, radius, echo) {
       var angle, completion, i, method, pRadius, points, _ref;
       if (radius < 0) return;
       ctx.beginPath();
+      radius += echo * ctx.lineWidth * this.style.echoDepth;
+      if (radius < 0) radius = 0;
+      ctx.globalAlpha = this.style.alpha * Curve.low((this.style.echoes - echo) / this.style.echoes);
       switch (this.style.shape) {
         case 'circle':
           ctx.circle(0, 0, radius);
@@ -137,11 +150,16 @@
           speed *= this.style.motionCurve(1 - completion);
         }
         return ctx["do"](function() {
+          var echo, _ref, _results;
           ctx.globalAlpha = _this.style.alpha;
           ctx.rotate(_this.style.twist.deg2rad() * _this.beat);
           ctx.lineJoin = _this.style.lineJoin;
           _this.setupStroke(ctx, completion);
-          return _this.drawShape(ctx, speed);
+          _results = [];
+          for (echo = 0, _ref = _this.style.echoes + 1; 0 <= _ref ? echo <= _ref : echo >= _ref; 0 <= _ref ? echo++ : echo--) {
+            _results.push(_this.drawShape(ctx, speed, echo));
+          }
+          return _results;
         });
       }
     };

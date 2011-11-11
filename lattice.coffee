@@ -1,7 +1,7 @@
 class @Lattice
   constructor: ->
-    # @rotOffset      = Random.float(10)
     @rotation       = Random.float(10, 60, curve:Curve.low) * [1, -1].random()
+    @rotOffset      = Random.float(0, @rotOffset)
     @twist          = Random.float(30, 360, curve: Curve.low2) * [1, -1].random()
     @twistBeatCurve = [Curve.linear, Curve.ease2, Curve.ease3].random(curve:Curve.low2)
     @segments       = Random.int 3, 12
@@ -16,8 +16,8 @@ class @Lattice
     step = 0.05
     
     @points = {}
-    @points.control = 
-      for i in [0..1.2] by step
+    @points.control =
+      for i in [0..1] by step
         polar2rect @curves.r(i) * 175, @curves.a(i) * @twist
       
     @points.end = []
@@ -28,7 +28,7 @@ class @Lattice
     
   render: (ctx) ->
     ctx.do =>
-      ctx.rotate (@rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU
+      ctx.rotate (@rotOffset + @rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU
       @renderFan ctx
       
       ctx.do =>

@@ -8,6 +8,7 @@
       this.rotation = Random.float(10, 60, {
         curve: Curve.low
       }) * [1, -1].random();
+      this.rotOffset = Random.float(0, this.rotOffset);
       this.twist = Random.float(30, 360, {
         curve: Curve.low2
       }) * [1, -1].random();
@@ -30,7 +31,7 @@
       this.points.control = (function() {
         var _results;
         _results = [];
-        for (i = 0; 0 <= 1.2 ? i <= 1.2 : i >= 1.2; i += step) {
+        for (i = 0; i <= 1; i += step) {
           _results.push(polar2rect(this.curves.r(i) * 175, this.curves.a(i) * this.twist));
         }
         return _results;
@@ -48,7 +49,7 @@
     Lattice.prototype.render = function(ctx) {
       var _this = this;
       return ctx["do"](function() {
-        ctx.rotate((_this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
+        ctx.rotate((_this.rotOffset + _this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
         _this.renderFan(ctx);
         return ctx["do"](function() {
           ctx.scale(-1, 1);
