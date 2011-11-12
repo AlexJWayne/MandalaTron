@@ -34,8 +34,8 @@
         starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)],
         twist: Random.float(5, 45) * [1, -1].random(),
         lineJoin: ['round', 'miter', 'bevel'].random(),
-        echoes: Random.int(0, 5, {
-          curve: Curve.low3
+        echoes: Random.int(1, 5, {
+          curve: Curve.low2
         }),
         echoDepth: [
           1, Random.float(1, 1.5, {
@@ -156,7 +156,7 @@
           ctx.lineJoin = _this.style.lineJoin;
           _this.setupStroke(ctx, completion);
           _results = [];
-          for (echo = 0, _ref = _this.style.echoes + 1; 0 <= _ref ? echo <= _ref : echo >= _ref; 0 <= _ref ? echo++ : echo--) {
+          for (echo = 0, _ref = _this.style.echoes; 0 <= _ref ? echo <= _ref : echo >= _ref; 0 <= _ref ? echo++ : echo--) {
             _results.push(_this.drawShape(ctx, speed, echo));
           }
           return _results;

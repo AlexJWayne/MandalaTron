@@ -1,6 +1,6 @@
 class @Particles
   constructor: ->
-    @count = Random.int(25, 300)
+    @count = Random.int(40, 300, curve:Curve.low2)
     
     @style =
       rotation: [

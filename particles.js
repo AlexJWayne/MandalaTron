@@ -5,7 +5,9 @@
   this.Particles = (function() {
 
     function Particles() {
-      this.count = Random.int(25, 300);
+      this.count = Random.int(40, 300, {
+        curve: Curve.low2
+      });
       this.style = {
         rotation: [[0, 0], [Random.float(-180, 180), Random.float(-180, 180)]].random(),
         color: [new HSL(stage.mainHue + 180, Random.float(75, 100), 50).toString(), new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()].random(),

@@ -16,7 +16,7 @@ class @Ripples
       starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)]
       twist:          Random.float(5, 45) * [1, -1].random()
       lineJoin:       ['round', 'miter', 'bevel'].random()
-      echoes:         Random.int(0, 5, curve:Curve.low3)
+      echoes:         Random.int(1, 5, curve:Curve.low2)
       echoDepth:      [1, Random.float(1, 1.5, curve:Curve.low)].random(curve:Curve.low) * [-1, 1].random()
       
       
@@ -108,7 +108,7 @@ class Ripple
         
         @setupStroke ctx, completion
         
-        for echo in [0..(@style.echoes + 1)]
+        for echo in [0..@style.echoes]
           @drawShape ctx, speed, echo
   
   setupStroke: (ctx, completion) ->
