@@ -1,5 +1,6 @@
 (function() {
   var Ripple;
+  var __slice = Array.prototype.slice;
 
   this.Ripples = (function() {
 
@@ -31,7 +32,8 @@
         outward: [true, true, false].random(),
         shape: ['circle', 'ngon', 'star'].random(),
         ngon: Random.int(3, 12),
-        starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)],
+        ngonCurve: [0, Random.float(0.2, 3)].random(),
+        starRadiusDiff: [Random.float(0.4, 2), Random.float(0.4, 2)],
         twist: Random.float(5, 45) * [1, -1].random(),
         lineJoin: ['round', 'miter', 'bevel'].random(),
         echoes: Random.int(1, 5, {
@@ -97,7 +99,7 @@
     }
 
     Ripple.prototype.drawShape = function(ctx, radius, echo) {
-      var angle, completion, i, method, pRadius, points, _ref;
+      var angle, completion, controlPointAngle, endPointAngle, i, method, pRadius, points, _ref;
       if (radius < 0) return;
       ctx.beginPath();
       radius += echo * ctx.lineWidth * this.style.echoDepth;
@@ -108,10 +110,18 @@
           ctx.circle(0, 0, radius);
           break;
         case 'ngon':
-          for (i = 0, _ref = this.style.ngon; 0 <= _ref ? i < _ref : i > _ref; 0 <= _ref ? i++ : i--) {
-            angle = i * 360 / this.style.ngon;
-            method = i === 0 ? 'moveTo' : 'lineTo';
-            ctx[method].apply(ctx, polar2rect(radius, angle));
+          for (i = 0, _ref = this.style.ngon; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+            endPointAngle = i * 360 / this.style.ngon;
+            if (i === 0) {
+              ctx.moveTo.apply(ctx, polar2rect(radius, endPointAngle));
+            } else {
+              if (this.style.ngonCurve === 0) {
+                ctx.lineTo.apply(ctx, polar2rect(radius, endPointAngle));
+              } else {
+                controlPointAngle = (i - 0.5) * 360 / this.style.ngon;
+                ctx.quadraticCurveTo.apply(ctx, __slice.call(polar2rect(radius * this.style.ngonCurve, controlPointAngle)).concat(__slice.call(polar2rect(radius, endPointAngle))));
+              }
+            }
           }
           ctx.closePath();
           break;
