@@ -8,11 +8,28 @@
       this.showFps = __bind(this.showFps, this);
       this.render = __bind(this.render, this);
       this.refresh = __bind(this.refresh, this);
-      var aspect;
+      var aspect, music;
       var _this = this;
       this.canvas = document.getElementById('canvas');
-      if (document.body.clientWidth < this.canvas.width) {
-        this.canvas.width = this.canvas.height = document.body.clientWidth;
+      this.canvas.width = 800;
+      this.canvas.height = 600;
+      if (window.navigator.userAgent.indexOf('iPhone') !== -1) {
+        document.getElementById('cycle').checked = true;
+        window.onorientationchange = function() {
+          return window.location.reload(true);
+        };
+        this.canvas.ontouchmove = function(e) {
+          return e.preventDefault();
+        };
+        music = document.getElementById('music');
+        music.parentNode.removeChild(music);
+        if (document.body.clientWidth === 320) {
+          this.canvas.width = 320;
+          this.canvas.height = 460;
+        } else {
+          this.canvas.width = 480;
+          this.canvas.height = 300;
+        }
       }
       this.ctx = this.canvas.getContext('2d');
       aspect = this.canvas.width / this.canvas.height;

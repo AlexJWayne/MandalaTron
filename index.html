@@ -2,14 +2,23 @@
 <html>
   <head>
     <title>MandalaTron</title>
-    <meta content='initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport'>
-    <script src="https://raw.github.com/headjs/headjs/v0.96/dist/head.load.min.js" type="text/javascript" charset="utf-8"></script>
+    
+    <meta name='viewport'                     content='initial-scale=1.0; maximum-scale=1.0; user-scalable=0;'>
+    <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iPhone full screen from home screen bookmark -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="icon.jpg">
+    
+    <script src="head.js" type="text/javascript" charset="utf-8"></script>
+    
     <style type="text/css" media="screen">
       body {
+        background: black;
         text-align: center;
         margin: 0;
         font-family: Helvetica;
         font-size: 12px;
+        -webkit-user-select: none;
+        color: #aaa;
       }
       
       canvas {
@@ -23,7 +32,6 @@
       
       p#link {
         font-weight: bold;
-        color: #666;
       }
       
       iframe {
@@ -31,6 +39,13 @@
         height: 500px;
       }
       
+    </style>
+    <style type="text/css" media="screen">
+      @media only screen and (max-device-width: 480px) {
+        form, iframe, p {
+          display: none
+        }
+      }
     </style>
   </head>
   <body>

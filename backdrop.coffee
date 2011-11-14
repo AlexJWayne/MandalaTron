@@ -47,4 +47,4 @@ class @Backdrop
       grad.addColorStop 1, outerColor.toString()
     
       ctx.fillStyle = grad
-      ctx.fillRect -100, -100, 200, 200
+      ctx.fillRect -stage.canvas.width/2, -stage.canvas.height/2, stage.canvas.width, stage.canvas.height

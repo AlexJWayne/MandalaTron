@@ -38,7 +38,7 @@
         grad.addColorStop(0, innerColor.toString());
         grad.addColorStop(1, outerColor.toString());
         ctx.fillStyle = grad;
-        return ctx.fillRect(-100, -100, 200, 200);
+        return ctx.fillRect(-stage.canvas.width / 2, -stage.canvas.height / 2, stage.canvas.width, stage.canvas.height);
       });
     };
 

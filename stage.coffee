@@ -1,11 +1,34 @@
+
 class @Stage
   constructor: ->
     # Fetch canvas
     @canvas = document.getElementById 'canvas'
+    @canvas.width = 800
+    @canvas.height = 600
     
-    # Size canvas
-    if document.body.clientWidth < @canvas.width
-      @canvas.width = @canvas.height = document.body.clientWidth
+    # setup iPhone web app
+    if window.navigator.userAgent.indexOf('iPhone') != -1
+      # Turn on autocycler
+      document.getElementById('cycle').checked = yes
+      
+      # refresh on orientation change
+      window.onorientationchange = -> window.location.reload yes
+      
+      # disable scrolling
+      @canvas.ontouchmove = (e) -> e.preventDefault()
+      
+      # Remove the music iframe
+      music = document.getElementById('music')
+      music.parentNode.removeChild music
+      
+      # size canvas properly
+      if document.body.clientWidth == 320
+        @canvas.width = 320
+        @canvas.height = 460
+      else
+        @canvas.width = 480
+        @canvas.height = 300
+    
     
     # Fetch drawing context
     @ctx = @canvas.getContext '2d'
@@ -18,7 +41,7 @@ class @Stage
     # Setup timings
     @frames = 0
     @start  = now()
-    
+        
     # Setup FPS reporter
     setInterval @showFps, 5000
     
