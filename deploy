@@ -4,18 +4,15 @@
 `git co gh-pages; git merge master;`
 
 # Generate manifest
-lines = []
-lines << 'CACHE MANIFEST'
-lines << "# Version: "+ `git show master`.split("\n").first.gsub(/^commit\s/, '')
-Dir.entries('.').each do |name|
-  next if name =~ /^\./
-  next if name =~ /\.coffee$/
-  next if name == 'deploy'
-  puts name
-  lines << name
-end
 File.open('mandalatron.appcache', 'w+') do |f|
-  f.write lines.join("\n")
+  f.puts 'CACHE MANIFEST'
+  f.puts "# Version: "+ `git show master`.split("\n").first.gsub(/^commit\s/, '')
+  Dir.entries('.').each do |name|
+    next if name =~ /^\./
+    next if name =~ /\.coffee$/
+    next if name == 'deploy'
+    f.puts name
+  end
 end
 
 # Commit app cache
