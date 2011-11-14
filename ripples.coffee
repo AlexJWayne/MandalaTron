@@ -13,18 +13,18 @@ class @Ripples
       outward:        [yes, yes, no].random()
       shape:          ['circle', 'ngon', 'star'].random()
       ngon:           Random.int(3, 12)
-      starRadiusDiff: [Random.float(0.5, 2), Random.float(0.5, 2)]
+      ngonCurve:      [0, Random.float(0.2, 3)].random()
+      starRadiusDiff: [Random.float(0.4, 2), Random.float(0.4, 2)]
       twist:          Random.float(5, 45) * [1, -1].random()
       lineJoin:       ['round', 'miter', 'bevel'].random()
       echoes:         Random.int(1, 5, curve:Curve.low2)
       echoDepth:      [1, Random.float(1, 1.5, curve:Curve.low)].random(curve:Curve.low) * [-1, 1].random()
       
-      
       # Stroke swell
       swell:          Random.float(0.8, 1.2)
       swellPoint:     Random.float(0.2, 0.8)
-      
     
+    # Dont animate star radius someimes
     @style.starRadiusDiff = [@style.starRadiusDiff[0]] if Random.float(1) < 0.25
     
     @elements = for i in [0...stage.beat.perMeasure]
@@ -63,10 +63,19 @@ class Ripple
         ctx.circle 0, 0, radius
     
       when 'ngon'
-        for i in [0...@style.ngon]
-          angle = i * 360 / @style.ngon
-          method = if i == 0 then 'moveTo' else 'lineTo'
-          ctx[method] polar2rect(radius, angle)...
+        for i in [0..@style.ngon]
+          endPointAngle = i * 360 / @style.ngon
+          if i == 0
+            ctx.moveTo polar2rect(radius, endPointAngle)...
+          else
+            
+            if @style.ngonCurve == 0
+              ctx.lineTo polar2rect(radius, endPointAngle)...
+            else
+              controlPointAngle = (i - 0.5) * 360 / @style.ngon
+              ctx.quadraticCurveTo polar2rect(radius * @style.ngonCurve, controlPointAngle)..., polar2rect(radius, endPointAngle)...
+            
+          
         ctx.closePath()
       
       when 'star'
