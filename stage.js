@@ -86,7 +86,7 @@
         layer = _ref[_i];
         layer.render(this.ctx);
       }
-      return requestAnimFrame(this.render, canvas);
+      return requestAnimFrame(this.render, this.canvas);
     };
 
     Stage.prototype.showFps = function() {

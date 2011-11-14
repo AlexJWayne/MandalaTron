@@ -109,7 +109,7 @@ class @Stage
     layer.render @ctx for layer in @layers
     
     # Schedule next render
-    requestAnimFrame @render, canvas
+    requestAnimFrame @render, @canvas
       
   showFps: =>
     rightNow = now()
