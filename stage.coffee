@@ -8,6 +8,10 @@ class @Stage
     
     # setup iPhone web app
     if window.navigator.userAgent.indexOf('iPhone') != -1
+      
+      #Save iPhone state
+      @iPhone = yes
+      
       # Turn on autocycler
       document.getElementById('cycle').checked = yes
       
@@ -75,6 +79,8 @@ class @Stage
     # Backdrop
     @layers.push new Backdrop()
     
+    maxLayers = Random.int(3, 6)
+    maxLayers = 3 if @iPhone
     for i in [0..Random.int(3, 6)]
       klass = [Ripples, Lattice, Particles].random()
       @layers.push new klass()
