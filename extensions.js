@@ -42,6 +42,13 @@
     return [r * Math.cos(a), r * Math.sin(a)];
   };
 
+  window.rect2polar = function(x, y) {
+    var a, r;
+    r = Math.sqrt(x * x + y * y);
+    a = Math.atan2(y, x).rad2deg();
+    return [r, a];
+  };
+
   extendPrototype(CanvasRenderingContext2D, {
     "do": function(fn) {
       this.save();

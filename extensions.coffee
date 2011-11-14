@@ -32,6 +32,11 @@ window.polar2rect = (r, a) ->
   a = a.deg2rad()
   [r * Math.cos(a), r * Math.sin(a)]
 
+window.rect2polar = (x, y) ->
+  r = Math.sqrt(x*x + y*y)
+  a = Math.atan2(y, x).rad2deg()
+  [r, a]
+
 # Enhance the 2d rendering context with some convenience methods
 extendPrototype CanvasRenderingContext2D,
   
