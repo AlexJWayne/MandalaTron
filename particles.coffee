@@ -1,6 +1,6 @@
 class @Particles
   constructor: ->
-    @count = Random.int(40, 300, curve:Curve.low2)
+    @count = Random.int(40, 250, curve:Curve.low2)
     
     @style =
       rotation: [
@@ -17,7 +17,7 @@ class @Particles
       size:       [Random.float(1, 2), Random.float(2, 8, curve:Curve.low3)]
       lifetime:   [Random.float(stage.beat.bps/2, stage.beat.bps*2), Random.float(stage.beat.bps/2, stage.beat.bps*2)]
       
-      type:       ['circle', 'arc'].random()
+      type:       ['circle', 'arc', 'zoom'].random()
       arcWidth:   [Random.float(3, 30, curve:Curve.low), Random.float(3, 45, curve:Curve.low)]
     
     # Repel from center
@@ -31,6 +31,16 @@ class @Particles
       @style.speed = [Random.float(0, 80) * stage.beat.bps, Random.float(100, 400) * stage.beat.bps]
       @style.drag  = [Random.float(0, 200) * stage.beat.bps, Random.float(0, 200) * stage.beat.bps]
       @style.spawnRadius = [Random.float(0, 20, curve:Curve.low2), Random.float(0, 40, curve:Curve.low2)]
+    
+    switch @style.type
+      when 'zoom'
+        @style.spawnRadius[0] /= 2
+        @style.spawnRadius[1] /= 2
+        @count *= 0.75
+        
+      when 'arc'
+        @count *= 0.6
+    
     
     @lastbeat = null
     @particles = []
@@ -85,12 +95,23 @@ class Particle
             
           when 'arc'
             ctx.strokeStyle = @style.color
-            ctx.lineWidth = @size/2
+            ctx.lineWidth = @size * 0.75
             ctx.lineCap = 'round'
             
             [r, a] = rect2polar @pos...
             ctx.beginPath()
             ctx.arc 0, 0, r, (a-@arcWidth).deg2rad(), (a+@arcWidth).deg2rad()
+            ctx.stroke()
+          
+          when 'zoom'
+            ctx.strokeStyle = @style.color
+            ctx.lineWidth = @size * 0.75
+            ctx.lineCap = 'round'
+            
+            [r, a] = rect2polar @pos...
+            ctx.beginPath()
+            ctx.moveTo @pos...
+            ctx.lineTo polar2rect(r + @arcWidth * 0.75, a)...
             ctx.stroke()
           
     
