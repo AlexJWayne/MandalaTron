@@ -81,7 +81,7 @@ class @Stage
     
     maxLayers = Random.int(3, 6)
     maxLayers = 3 if @iPhone
-    for i in [0..Random.int(3, 6)]
+    for i in [0..maxLayers]
       klass = [Ripples, Lattice, Particles].random()
       @layers.push new klass()
     
