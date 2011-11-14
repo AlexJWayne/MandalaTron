@@ -4,9 +4,9 @@ class @Particles
     
     @style =
       rotation: [
-        [0, 0]
         [Random.float(-270, 270), Random.float(-270, 270)]
-      ].random()
+        [0, 0]
+      ].random(curve:Curve.low2)
       
       color: [
         new HSL(stage.mainHue + Random.float(150, 210), Random.float(75, 100), 50).toString()
@@ -17,7 +17,9 @@ class @Particles
       size:       [Random.float(1, 2), Random.float(2, 8, curve:Curve.low3)]
       lifetime:   [Random.float(stage.beat.bps/2, stage.beat.bps*2), Random.float(stage.beat.bps/2, stage.beat.bps*2)]
       
-      
+      type:       ['circle', 'arc'].random()
+      arcWidth:   [Random.float(3, 30, curve:Curve.low), Random.float(3, 45, curve:Curve.low)]
+    
     # Repel from center
     if Random.int(2) == 0
       @style.speed = [0, 0]
@@ -40,9 +42,7 @@ class @Particles
       @lastbeat = stage.beat.beat()
       @particles.push new Particle(@style) for i in [0..@count]
     
-    ctx.do =>
-      ctx.fillStyle = @style.color
-      p.render ctx for p in @particles
+    p.render ctx for p in @particles
     
 class Particle
   constructor: (@style) ->
@@ -57,6 +57,7 @@ class Particle
     @drag      = Random.float(@style.drag...)
     @rotation  = Random.float(@style.rotation...)
     @lifetime  = Random.float(@style.lifetime...)
+    @arcWidth  = Random.float(@style.arcWidth...)
     
   render: (ctx) ->
     livedFor = stage.beat.now - @startedAt
@@ -76,5 +77,20 @@ class Particle
       ctx.do =>
         ctx.globalAlpha = @style.maxAlpha * Curve.high(1 - (livedFor / @lifetime))
         ctx.rotate @rotation.deg2rad() * (livedFor / @lifetime)
-        ctx.fillCircle @pos..., @size
+        
+        switch @style.type
+          when 'circle'
+            ctx.fillStyle = @style.color
+            ctx.fillCircle @pos..., @size
+            
+          when 'arc'
+            ctx.strokeStyle = @style.color
+            ctx.lineWidth = @size/2
+            ctx.lineCap = 'round'
+            
+            [r, a] = rect2polar @pos...
+            ctx.beginPath()
+            ctx.arc 0, 0, r, (a-@arcWidth).deg2rad(), (a+@arcWidth).deg2rad()
+            ctx.stroke()
+          
     
