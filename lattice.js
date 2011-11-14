@@ -9,8 +9,8 @@
         curve: Curve.low
       }) * [1, -1].random();
       this.rotOffset = Random.float(0, this.rotOffset);
-      this.twist = Random.float(30, 360, {
-        curve: Curve.low2
+      this.twist = Random.float(45, 450, {
+        curve: Curve.low
       }) * [1, -1].random();
       this.twistBeatCurve = [Curve.linear, Curve.ease2, Curve.ease3].random({
         curve: Curve.low2
@@ -18,12 +18,12 @@
       this.segments = Random.int(3, 12);
       this.color = new HSL((stage.mainHue + 180) % 360, Random.float(100), Random.float(100)).toString();
       this.aplha = Random.float(0.25, 1);
-      this.width = Random.float(1, 8, {
+      this.width = Random.float(1, 6, {
         curve: Curve.low3
       });
       this.alpha = Random.float(0.35, 1);
       this.curves = {
-        r: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random(),
+        r: Curve.low3,
         a: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()
       };
       step = 0.05;
@@ -48,10 +48,10 @@
 
     Lattice.prototype.render = function(ctx) {
       var _this = this;
-      return ctx["do"](function() {
+      return ctx.render(function() {
         ctx.rotate((_this.rotOffset + _this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
         _this.renderFan(ctx);
-        return ctx["do"](function() {
+        return ctx.render(function() {
           ctx.scale(-1, 1);
           return _this.renderFan(ctx);
         });
@@ -60,7 +60,7 @@
 
     Lattice.prototype.renderFan = function(ctx) {
       var _this = this;
-      return ctx["do"](function() {
+      return ctx.render(function() {
         var curvedProgression, i, _ref, _results;
         curvedProgression = stage.beat.beatProgress();
         curvedProgression = _this.twistBeatCurve(curvedProgression);

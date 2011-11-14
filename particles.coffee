@@ -30,7 +30,7 @@ class @Particles
     else
       @style.speed = [Random.float(0, 80) * stage.beat.bps, Random.float(100, 400) * stage.beat.bps]
       @style.drag  = [Random.float(0, 200) * stage.beat.bps, Random.float(0, 200) * stage.beat.bps]
-      @style.spawnRadius = [Random.float(0, 20, curve:Curve.low2), Random.float(0, 40, curve:Curve.low2)]
+      @style.spawnRadius = [Random.float(0, 15, curve:Curve.low2), Random.float(0, 30, curve:Curve.low2)]
     
     switch @style.type
       when 'zoom'
@@ -47,6 +47,8 @@ class @Particles
   
   render: (ctx) ->
     @particles = (p for p in @particles when p.alive)
+    ctx.fillStyle = @style.color
+    ctx.strokeStyle = @style.color
     
     if @lastbeat != stage.beat.beat()
       @lastbeat = stage.beat.beat()
@@ -75,43 +77,51 @@ class Particle
       @alive = no
       
     else
-      frameTime = stage.beat.now - @lastFrame
-      @lastFrame = stage.beat.now
-    
-      @dragVel = polar2rect @drag, @angle
-    
-      for i in [0..1]
-        @vel[i] -= @dragVel[i] * frameTime
-        @pos[i] += @vel[i]     * frameTime
-    
-      ctx.do =>
+      @update()
+      
+      ctx.render =>
         ctx.globalAlpha = @style.maxAlpha * Curve.high(1 - (livedFor / @lifetime))
         ctx.rotate @rotation.deg2rad() * (livedFor / @lifetime)
         
         switch @style.type
           when 'circle'
-            ctx.fillStyle = @style.color
-            ctx.fillCircle @pos..., @size
+            @renderCircle ctx
             
           when 'arc'
-            ctx.strokeStyle = @style.color
-            ctx.lineWidth = @size * 0.75
-            ctx.lineCap = 'round'
-            
-            [r, a] = rect2polar @pos...
-            ctx.beginPath()
-            ctx.arc 0, 0, r, (a-@arcWidth).deg2rad(), (a+@arcWidth).deg2rad()
-            ctx.stroke()
+            @renderArc ctx
           
           when 'zoom'
-            ctx.strokeStyle = @style.color
-            ctx.lineWidth = @size * 0.75
-            ctx.lineCap = 'round'
+            @renderZoom ctx
             
-            [r, a] = rect2polar @pos...
-            ctx.beginPath()
-            ctx.moveTo @pos...
-            ctx.lineTo polar2rect(r + @arcWidth * 0.75, a)...
-            ctx.stroke()
-          
     
+  renderCircle: (ctx) ->
+    ctx.fillCircle @pos..., @size
+  
+  renderArc: (ctx) ->
+    ctx.lineWidth = @size * 0.75
+    ctx.lineCap = 'round'
+    
+    [r, a] = rect2polar @pos...
+    ctx.beginPath()
+    ctx.arc 0, 0, r, (a-@arcWidth).deg2rad(), (a+@arcWidth).deg2rad()
+    ctx.stroke()
+  
+  renderZoom: (ctx) ->
+    ctx.lineWidth = @size * 0.75
+    ctx.lineCap = 'round'
+    
+    [r, a] = rect2polar @pos...
+    ctx.beginPath()
+    ctx.moveTo @pos...
+    ctx.lineTo polar2rect(r + @arcWidth * 0.75, a)...
+    ctx.stroke()
+   
+  update: (ctx) ->
+    frameTime = stage.beat.now - @lastFrame
+    @lastFrame = stage.beat.now
+  
+    @dragVel = polar2rect @drag, @angle
+  
+    for i in [0..1]
+      @vel[i] -= @dragVel[i] * frameTime
+      @pos[i] += @vel[i]     * frameTime

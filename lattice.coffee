@@ -2,15 +2,15 @@ class @Lattice
   constructor: ->
     @rotation       = Random.float(10, 60, curve:Curve.low) * [1, -1].random()
     @rotOffset      = Random.float(0, @rotOffset)
-    @twist          = Random.float(30, 360, curve: Curve.low2) * [1, -1].random()
+    @twist          = Random.float(45, 450, curve: Curve.low) * [1, -1].random()
     @twistBeatCurve = [Curve.linear, Curve.ease2, Curve.ease3].random(curve:Curve.low2)
     @segments       = Random.int 3, 12
     @color          = new HSL((stage.mainHue + 180) % 360, Random.float(100), Random.float(100)).toString()
     @aplha          = Random.float 0.25, 1
-    @width          = Random.float(1, 8, curve: Curve.low3)
+    @width          = Random.float(1, 6, curve: Curve.low3)
     @alpha          = Random.float(0.35, 1)
     @curves =
-      r: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()
+      r: Curve.low3
       a: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()
     
     step = 0.05
@@ -27,16 +27,16 @@ class @Lattice
       @points.end.push [Math.avg(point[0], next[0]), Math.avg(point[1], next[1])] if point && next
     
   render: (ctx) ->
-    ctx.do =>
+    ctx.render =>
       ctx.rotate (@rotOffset + @rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU
       @renderFan ctx
       
-      ctx.do =>
+      ctx.render =>
         ctx.scale -1, 1
         @renderFan ctx
   
   renderFan: (ctx) ->
-    ctx.do =>
+    ctx.render =>
       curvedProgression = stage.beat.beatProgress()
       curvedProgression = @twistBeatCurve curvedProgression
       

@@ -17,7 +17,6 @@
         margin: 0;
         font-family: Helvetica;
         font-size: 12px;
-        -webkit-user-select: none;
         color: #aaa;
       }
       
@@ -47,6 +46,9 @@
     </style>
     <style type="text/css" media="screen">
       @media only screen and (max-device-width: 480px) {
+        body {
+          -webkit-user-select: none;
+        }
         form, iframe, p {
           display: none
         }

@@ -37,20 +37,17 @@
     return start * (1 - amount) + end * amount;
   };
 
-  window.polar2rect = function(r, a) {
+  window.polar2rect = Math.polar2rect = function(r, a) {
     a = a.deg2rad();
     return [r * Math.cos(a), r * Math.sin(a)];
   };
 
-  window.rect2polar = function(x, y) {
-    var a, r;
-    r = Math.sqrt(x * x + y * y);
-    a = Math.atan2(y, x).rad2deg();
-    return [r, a];
+  window.rect2polar = Math.rect2polar = function(x, y) {
+    return [Math.sqrt(x * x + y * y), Math.atan2(y, x).rad2deg()];
   };
 
   extendPrototype(CanvasRenderingContext2D, {
-    "do": function(fn) {
+    render: function(fn) {
       this.save();
       fn();
       return this.restore();

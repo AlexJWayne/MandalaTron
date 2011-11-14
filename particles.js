@@ -39,9 +39,9 @@
         this.style.speed = [Random.float(0, 80) * stage.beat.bps, Random.float(100, 400) * stage.beat.bps];
         this.style.drag = [Random.float(0, 200) * stage.beat.bps, Random.float(0, 200) * stage.beat.bps];
         this.style.spawnRadius = [
-          Random.float(0, 20, {
+          Random.float(0, 15, {
             curve: Curve.low2
-          }), Random.float(0, 40, {
+          }), Random.float(0, 30, {
             curve: Curve.low2
           })
         ];
@@ -71,6 +71,8 @@
         }
         return _results;
       }).call(this);
+      ctx.fillStyle = this.style.color;
+      ctx.strokeStyle = this.style.color;
       if (this.lastbeat !== stage.beat.beat()) {
         this.lastbeat = stage.beat.beat();
         for (i = 0, _ref = this.count; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
@@ -108,47 +110,64 @@
     }
 
     Particle.prototype.render = function(ctx) {
-      var frameTime, i, livedFor;
+      var livedFor;
       var _this = this;
       livedFor = stage.beat.now - this.startedAt;
       if (livedFor > this.lifetime) {
         return this.alive = false;
       } else {
-        frameTime = stage.beat.now - this.lastFrame;
-        this.lastFrame = stage.beat.now;
-        this.dragVel = polar2rect(this.drag, this.angle);
-        for (i = 0; i <= 1; i++) {
-          this.vel[i] -= this.dragVel[i] * frameTime;
-          this.pos[i] += this.vel[i] * frameTime;
-        }
-        return ctx["do"](function() {
-          var a, r, _ref, _ref2;
+        this.update();
+        return ctx.render(function() {
           ctx.globalAlpha = _this.style.maxAlpha * Curve.high(1 - (livedFor / _this.lifetime));
           ctx.rotate(_this.rotation.deg2rad() * (livedFor / _this.lifetime));
           switch (_this.style.type) {
             case 'circle':
-              ctx.fillStyle = _this.style.color;
-              return ctx.fillCircle.apply(ctx, __slice.call(_this.pos).concat([_this.size]));
+              return _this.renderCircle(ctx);
             case 'arc':
-              ctx.strokeStyle = _this.style.color;
-              ctx.lineWidth = _this.size * 0.75;
-              ctx.lineCap = 'round';
-              _ref = rect2polar.apply(null, _this.pos), r = _ref[0], a = _ref[1];
-              ctx.beginPath();
-              ctx.arc(0, 0, r, (a - _this.arcWidth).deg2rad(), (a + _this.arcWidth).deg2rad());
-              return ctx.stroke();
+              return _this.renderArc(ctx);
             case 'zoom':
-              ctx.strokeStyle = _this.style.color;
-              ctx.lineWidth = _this.size * 0.75;
-              ctx.lineCap = 'round';
-              _ref2 = rect2polar.apply(null, _this.pos), r = _ref2[0], a = _ref2[1];
-              ctx.beginPath();
-              ctx.moveTo.apply(ctx, _this.pos);
-              ctx.lineTo.apply(ctx, polar2rect(r + _this.arcWidth * 0.75, a));
-              return ctx.stroke();
+              return _this.renderZoom(ctx);
           }
         });
       }
+    };
+
+    Particle.prototype.renderCircle = function(ctx) {
+      return ctx.fillCircle.apply(ctx, __slice.call(this.pos).concat([this.size]));
+    };
+
+    Particle.prototype.renderArc = function(ctx) {
+      var a, r, _ref;
+      ctx.lineWidth = this.size * 0.75;
+      ctx.lineCap = 'round';
+      _ref = rect2polar.apply(null, this.pos), r = _ref[0], a = _ref[1];
+      ctx.beginPath();
+      ctx.arc(0, 0, r, (a - this.arcWidth).deg2rad(), (a + this.arcWidth).deg2rad());
+      return ctx.stroke();
+    };
+
+    Particle.prototype.renderZoom = function(ctx) {
+      var a, r, _ref;
+      ctx.lineWidth = this.size * 0.75;
+      ctx.lineCap = 'round';
+      _ref = rect2polar.apply(null, this.pos), r = _ref[0], a = _ref[1];
+      ctx.beginPath();
+      ctx.moveTo.apply(ctx, this.pos);
+      ctx.lineTo.apply(ctx, polar2rect(r + this.arcWidth * 0.75, a));
+      return ctx.stroke();
+    };
+
+    Particle.prototype.update = function(ctx) {
+      var frameTime, i, _results;
+      frameTime = stage.beat.now - this.lastFrame;
+      this.lastFrame = stage.beat.now;
+      this.dragVel = polar2rect(this.drag, this.angle);
+      _results = [];
+      for (i = 0; i <= 1; i++) {
+        this.vel[i] -= this.dragVel[i] * frameTime;
+        _results.push(this.pos[i] += this.vel[i] * frameTime);
+      }
+      return _results;
     };
 
     return Particle;
