@@ -9,17 +9,33 @@
         curve: Curve.low2
       });
       this.style = {
-        rotation: [[0, 0], [Random.float(-180, 180), Random.float(-180, 180)]].random(),
-        color: [new HSL(stage.mainHue + 180, Random.float(75, 100), 50).toString(), new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()].random(),
-        speed: [Random.float(0, 80) * stage.beat.bps, Random.float(120, 400) * stage.beat.bps],
+        rotation: [[0, 0], [Random.float(-270, 270), Random.float(-270, 270)]].random(),
+        color: [new HSL(stage.mainHue + Random.float(150, 210), Random.float(75, 100), 50).toString(), new HSL(stage.mainHue + Random.float(150, 210), Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()].random(),
+        maxAlpha: Random.float(0.25, 1, {
+          curve: Curve.high
+        }),
         size: [
           Random.float(1, 2), Random.float(2, 8, {
-            curve: Curve.low2
+            curve: Curve.low3
           })
         ],
-        drag: [Random.float(0, 200) * stage.beat.bps, Random.float(0, 200) * stage.beat.bps],
         lifetime: [Random.float(stage.beat.bps / 2, stage.beat.bps * 2), Random.float(stage.beat.bps / 2, stage.beat.bps * 2)]
       };
+      if (Random.int(2) === 0) {
+        this.style.speed = [0, 0];
+        this.style.drag = [Random.float(-100, -300), Random.float(-400, -800)];
+        this.style.spawnRadius = [0, 0];
+      } else {
+        this.style.speed = [Random.float(0, 80) * stage.beat.bps, Random.float(100, 400) * stage.beat.bps];
+        this.style.drag = [Random.float(0, 200) * stage.beat.bps, Random.float(0, 200) * stage.beat.bps];
+        this.style.spawnRadius = [
+          Random.float(0, 20, {
+            curve: Curve.low2
+          }), Random.float(0, 40, {
+            curve: Curve.low2
+          })
+        ];
+      }
       this.lastbeat = null;
       this.particles = [];
     }
@@ -67,8 +83,8 @@
       this.startedAt = stage.beat.now || now();
       this.lastFrame = stage.beat.now || now();
       this.alive = true;
-      this.pos = [0, 0];
       this.angle = Random.float(360);
+      this.pos = polar2rect(Random.float.apply(Random, this.style.spawnRadius), this.angle);
       this.vel = polar2rect(Random.float.apply(Random, this.style.speed), this.angle);
       this.size = Random.float.apply(Random, this.style.size);
       this.drag = Random.float.apply(Random, this.style.drag);
@@ -91,7 +107,7 @@
           this.pos[i] += this.vel[i] * frameTime;
         }
         return ctx["do"](function() {
-          ctx.globalAlpha = Curve.high(1 - (livedFor / _this.lifetime));
+          ctx.globalAlpha = _this.style.maxAlpha * Curve.high(1 - (livedFor / _this.lifetime));
           ctx.rotate(_this.rotation.deg2rad() * (livedFor / _this.lifetime));
           return ctx.fillCircle.apply(ctx, __slice.call(_this.pos).concat([_this.size]));
         });

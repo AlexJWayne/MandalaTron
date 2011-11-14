@@ -5,19 +5,30 @@ class @Particles
     @style =
       rotation: [
         [0, 0]
-        [Random.float(-180, 180), Random.float(-180, 180)]
+        [Random.float(-270, 270), Random.float(-270, 270)]
       ].random()
       
       color: [
-        new HSL(stage.mainHue + 180, Random.float(75, 100), 50).toString()
-        new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()
+        new HSL(stage.mainHue + Random.float(150, 210), Random.float(75, 100), 50).toString()
+        new HSL(stage.mainHue + Random.float(150, 210), Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()
       ].random()
+      maxAlpha: Random.float(0.25, 1, curve:Curve.high)
       
-      speed:      [Random.float(0, 80) * stage.beat.bps, Random.float(120, 400) * stage.beat.bps]
-      size:       [Random.float(1, 2), Random.float(2, 8, curve:Curve.low2)]
-      
-      drag:       [Random.float(0, 200) * stage.beat.bps, Random.float(0, 200) * stage.beat.bps]
+      size:       [Random.float(1, 2), Random.float(2, 8, curve:Curve.low3)]
       lifetime:   [Random.float(stage.beat.bps/2, stage.beat.bps*2), Random.float(stage.beat.bps/2, stage.beat.bps*2)]
+      
+      
+    # Repel from center
+    if Random.int(2) == 0
+      @style.speed = [0, 0]
+      @style.drag = [Random.float(-100, -300), Random.float(-400, -800)]
+      @style.spawnRadius = [0, 0]
+    
+    # Attract to center
+    else
+      @style.speed = [Random.float(0, 80) * stage.beat.bps, Random.float(100, 400) * stage.beat.bps]
+      @style.drag  = [Random.float(0, 200) * stage.beat.bps, Random.float(0, 200) * stage.beat.bps]
+      @style.spawnRadius = [Random.float(0, 20, curve:Curve.low2), Random.float(0, 40, curve:Curve.low2)]
     
     @lastbeat = null
     @particles = []
@@ -39,8 +50,8 @@ class Particle
     @lastFrame = stage.beat.now || now()
     @alive     = yes
     
-    @pos       = [0, 0]
     @angle     = Random.float(360)
+    @pos       = polar2rect Random.float(@style.spawnRadius...), @angle
     @vel       = polar2rect Random.float(@style.speed...), @angle
     @size      = Random.float(@style.size...)
     @drag      = Random.float(@style.drag...)
@@ -63,7 +74,7 @@ class Particle
         @pos[i] += @vel[i]     * frameTime
     
       ctx.do =>
-        ctx.globalAlpha = Curve.high(1 - (livedFor / @lifetime))
+        ctx.globalAlpha = @style.maxAlpha * Curve.high(1 - (livedFor / @lifetime))
         ctx.rotate @rotation.deg2rad() * (livedFor / @lifetime)
         ctx.fillCircle @pos..., @size
     
