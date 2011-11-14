@@ -19,7 +19,7 @@ File.open('mandalatron.appcache', 'w+') do |f|
 end
 
 # Commit app cache
-`git commit -m 'appcache update'`
+`git commit -a -m 'appcache update'`
 
 # Push
 `git push`
