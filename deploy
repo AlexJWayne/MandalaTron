@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 
 # Switch branches and merge in master
-`git co gh-pages; git merge master;`
+`git checkout gh-pages; git merge master;`
 
 # Generate manifest
 File.open('mandalatron.appcache', 'w+') do |f|
@@ -16,10 +16,10 @@ File.open('mandalatron.appcache', 'w+') do |f|
 end
 
 # Commit app cache
-`git commit -a -m 'appcache update'`
+`git add .; git commit -m 'appcache update'`
 
 # Push
 `git push`
 
 # Switch back to master
-`git co master`
+`git checkout master`
