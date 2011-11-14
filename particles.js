@@ -5,7 +5,7 @@
   this.Particles = (function() {
 
     function Particles() {
-      this.count = Random.int(40, 300, {
+      this.count = Random.int(40, 250, {
         curve: Curve.low2
       });
       this.style = {
@@ -22,7 +22,7 @@
           })
         ],
         lifetime: [Random.float(stage.beat.bps / 2, stage.beat.bps * 2), Random.float(stage.beat.bps / 2, stage.beat.bps * 2)],
-        type: ['circle', 'arc'].random(),
+        type: ['circle', 'arc', 'zoom'].random(),
         arcWidth: [
           Random.float(3, 30, {
             curve: Curve.low
@@ -45,6 +45,15 @@
             curve: Curve.low2
           })
         ];
+      }
+      switch (this.style.type) {
+        case 'zoom':
+          this.style.spawnRadius[0] /= 2;
+          this.style.spawnRadius[1] /= 2;
+          this.count *= 0.75;
+          break;
+        case 'arc':
+          this.count *= 0.6;
       }
       this.lastbeat = null;
       this.particles = [];
@@ -113,7 +122,7 @@
           this.pos[i] += this.vel[i] * frameTime;
         }
         return ctx["do"](function() {
-          var a, r, _ref;
+          var a, r, _ref, _ref2;
           ctx.globalAlpha = _this.style.maxAlpha * Curve.high(1 - (livedFor / _this.lifetime));
           ctx.rotate(_this.rotation.deg2rad() * (livedFor / _this.lifetime));
           switch (_this.style.type) {
@@ -122,11 +131,20 @@
               return ctx.fillCircle.apply(ctx, __slice.call(_this.pos).concat([_this.size]));
             case 'arc':
               ctx.strokeStyle = _this.style.color;
-              ctx.lineWidth = _this.size / 2;
+              ctx.lineWidth = _this.size * 0.75;
               ctx.lineCap = 'round';
               _ref = rect2polar.apply(null, _this.pos), r = _ref[0], a = _ref[1];
               ctx.beginPath();
               ctx.arc(0, 0, r, (a - _this.arcWidth).deg2rad(), (a + _this.arcWidth).deg2rad());
+              return ctx.stroke();
+            case 'zoom':
+              ctx.strokeStyle = _this.style.color;
+              ctx.lineWidth = _this.size * 0.75;
+              ctx.lineCap = 'round';
+              _ref2 = rect2polar.apply(null, _this.pos), r = _ref2[0], a = _ref2[1];
+              ctx.beginPath();
+              ctx.moveTo.apply(ctx, _this.pos);
+              ctx.lineTo.apply(ctx, polar2rect(r + _this.arcWidth * 0.75, a));
               return ctx.stroke();
           }
         });
