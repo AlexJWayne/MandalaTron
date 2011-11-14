@@ -13,15 +13,15 @@ class @Ripples
       outward:        [yes, yes, no].random()
       shape:          ['circle', 'ngon', 'star'].random()
       ngon:           Random.int(3, 12)
-      ngonCurve:      [0, Random.float(0.2, 3)].random()
+      ngonCurve:      [0, Random.float(0.2, 1, curve:Curve.high3), Random.float(1, 2.5, curve:Curve.low3)].random()
       starRadiusDiff: [Random.float(0.4, 2), Random.float(0.4, 2)]
       twist:          Random.float(5, 45) * [1, -1].random()
-      lineJoin:       ['round', 'miter', 'bevel'].random()
-      echoes:         Random.int(1, 5, curve:Curve.low2)
+      lineJoin:       ['round', 'miter'].random()
+      echoes:         [0, Random.int(2, 7, curve:Curve.low2)].random()
       echoDepth:      [1, Random.float(1, 1.5, curve:Curve.low)].random(curve:Curve.low) * [-1, 1].random()
       
       # Stroke swell
-      swell:          Random.float(0.8, 1.2)
+      swell:          1 #Random.float(0.8, 1.2)
       swellPoint:     Random.float(0.2, 0.8)
     
     # Dont animate star radius someimes
@@ -31,7 +31,7 @@ class @Ripples
       new Ripple { @style, beat: i }
   
   render: (ctx) ->
-    ctx.do =>
+    ctx.render =>
       ctx.rotate (@rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU
       element.render ctx for element in @elements
   
@@ -110,7 +110,7 @@ class Ripple
       else
         speed *= @style.motionCurve 1 - completion
       
-      ctx.do =>
+      ctx.render =>
         ctx.globalAlpha = @style.alpha
         ctx.rotate @style.twist.deg2rad() * @beat
         ctx.lineJoin = @style.lineJoin

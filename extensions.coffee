@@ -28,19 +28,20 @@ window.blend = (start, end, amount) ->
   start * (1 - amount) + end * amount
 
 # Convert
-window.polar2rect = (r, a) ->
+window.polar2rect = Math.polar2rect = (r, a) ->
   a = a.deg2rad()
   [r * Math.cos(a), r * Math.sin(a)]
 
-window.rect2polar = (x, y) ->
-  r = Math.sqrt(x*x + y*y)
-  a = Math.atan2(y, x).rad2deg()
-  [r, a]
+window.rect2polar = Math.rect2polar = (x, y) ->
+  [
+    Math.sqrt(x*x + y*y)       # r
+    Math.atan2(y, x).rad2deg() # a
+  ]
 
 # Enhance the 2d rendering context with some convenience methods
 extendPrototype CanvasRenderingContext2D,
   
-  do: (fn) ->
+  render: (fn) ->
     @save()
     fn()
     @restore()

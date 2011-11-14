@@ -32,13 +32,21 @@
         outward: [true, true, false].random(),
         shape: ['circle', 'ngon', 'star'].random(),
         ngon: Random.int(3, 12),
-        ngonCurve: [0, Random.float(0.2, 3)].random(),
+        ngonCurve: [
+          0, Random.float(0.2, 1, {
+            curve: Curve.high3
+          }), Random.float(1, 2.5, {
+            curve: Curve.low3
+          })
+        ].random(),
         starRadiusDiff: [Random.float(0.4, 2), Random.float(0.4, 2)],
         twist: Random.float(5, 45) * [1, -1].random(),
-        lineJoin: ['round', 'miter', 'bevel'].random(),
-        echoes: Random.int(1, 5, {
-          curve: Curve.low2
-        }),
+        lineJoin: ['round', 'miter'].random(),
+        echoes: [
+          0, Random.int(2, 7, {
+            curve: Curve.low2
+          })
+        ].random(),
         echoDepth: [
           1, Random.float(1, 1.5, {
             curve: Curve.low
@@ -46,7 +54,7 @@
         ].random({
           curve: Curve.low
         }) * [-1, 1].random(),
-        swell: Random.float(0.8, 1.2),
+        swell: 1,
         swellPoint: Random.float(0.2, 0.8)
       };
       if (Random.float(1) < 0.25) {
@@ -67,7 +75,7 @@
 
     Ripples.prototype.render = function(ctx) {
       var _this = this;
-      return ctx["do"](function() {
+      return ctx.render(function() {
         var element, _i, _len, _ref, _results;
         ctx.rotate((_this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
         _ref = _this.elements;
@@ -159,7 +167,7 @@
         } else {
           speed *= this.style.motionCurve(1 - completion);
         }
-        return ctx["do"](function() {
+        return ctx.render(function() {
           var echo, _ref, _results;
           ctx.globalAlpha = _this.style.alpha;
           ctx.rotate(_this.style.twist.deg2rad() * _this.beat);
