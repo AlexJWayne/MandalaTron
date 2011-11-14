@@ -47,7 +47,7 @@
     }
 
     Stage.prototype.refresh = function(options) {
-      var i, klass, maxLayers, _ref;
+      var i, klass, maxLayers;
       var _this = this;
       if (options == null) options = {};
       if (options.randomize || !(Random.seedValue != null)) Random.seed();
@@ -59,7 +59,7 @@
       this.layers.push(new Backdrop());
       maxLayers = Random.int(3, 6);
       if (this.iPhone) maxLayers = 3;
-      for (i = 0, _ref = Random.int(3, 6); 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+      for (i = 0; 0 <= maxLayers ? i <= maxLayers : i >= maxLayers; 0 <= maxLayers ? i++ : i--) {
         klass = [Ripples, Lattice, Particles].random();
         this.layers.push(new klass());
       }

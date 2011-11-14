@@ -1,10 +1,10 @@
 class @Ripples
   constructor: ->
-    @rotation = Random.float(30, 360, curve:Curve.low) * [1, -1].random()
+    @rotation = Random.float(30, 210, curve:Curve.low2) * [1, -1].random()
     
     @style =
       speed:          Random.float(160, 300, curve:Curve.low)
-      baseWidth:      [Random.float(0.5, 10, curve:Curve.low), Random.float(0.5, 10, curve:Curve.low)]
+      baseWidth:      [Random.float(0.5, 8, curve:Curve.low), Random.float(0.5, 8, curve:Curve.low)]
       beatColor:      new HSL(stage.mainHue + 180, Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()
       emphasisColor:  new HSL(stage.mainHue + 180, Random.float(75, 100), 50).toString()
       emphasisSpeed:  Random.float(1, 2, curve:Curve.low)
@@ -22,7 +22,7 @@ class @Ripples
       
       # Stroke swell
       swell:          Random.float(0.8, 1.2)
-      swellPoint:     Random.float(0.1, 0.9)
+      swellPoint:     Random.float(0.2, 0.8)
       
     
     @style.starRadiusDiff = [@style.starRadiusDiff[0]] if Random.float(1) < 0.25
