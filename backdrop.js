@@ -26,6 +26,7 @@
 
     Backdrop.prototype.render = function(ctx) {
       var _this = this;
+      if (this.expired) this.dead = true;
       return ctx.render(function() {
         ctx.globalAlpha = 1.0;
         ctx.fillStyle = _this.createGradient(ctx);

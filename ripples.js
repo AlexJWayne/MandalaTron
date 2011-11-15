@@ -53,9 +53,7 @@
           })
         ].random({
           curve: Curve.low
-        }) * [-1, 1].random(),
-        swell: 1,
-        swellPoint: Random.float(0.2, 0.8)
+        }) * [-1, 1].random()
       };
       if (Random.float(1) < 0.25) {
         this.style.starRadiusDiff = [this.style.starRadiusDiff[0]];
@@ -74,7 +72,23 @@
     }
 
     Ripples.prototype.render = function(ctx) {
+      var e;
       var _this = this;
+      if (this.expired && !this.dead) {
+        this.elements = (function() {
+          var _i, _len, _ref, _results;
+          _ref = this.elements;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            e = _ref[_i];
+            if (!(!e.dead)) continue;
+            e.expired = true;
+            _results.push(e);
+          }
+          return _results;
+        }).call(this);
+        if (this.elements.length === 0) this.dead = true;
+      }
       return ctx.render(function() {
         var element, _i, _len, _ref, _results;
         ctx.rotate((_this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
@@ -101,7 +115,8 @@
       this.emphasis = options.beat === 0;
       this.perMeasure = stage.beat.perMeasure;
       this.bps = stage.beat.bps;
-      this.offset = this.beat / this.perMeasure;
+      this.alive = false;
+      this.offset = -this.beat / this.perMeasure;
       this.lifetime = this.perMeasure / this.bps;
       this.startedAt = stage.beat.startedAt - (this.offset * this.lifetime);
     }
@@ -153,12 +168,19 @@
     Ripple.prototype.render = function(ctx) {
       var completion, elapsed, speed;
       var _this = this;
+      if (stage.beat.beat() === this.beat) this.alive = true;
+      if (!this.alive) return;
       elapsed = stage.beat.now - this.startedAt;
       while (elapsed > this.lifetime) {
         elapsed -= this.lifetime;
         this.startedAt += this.lifetime;
       }
       completion = elapsed / this.lifetime;
+      if (completion < this.lastCompletion && this.expired) {
+        this.dead = true;
+        return;
+      }
+      this.lastCompletion = completion;
       if (elapsed > 0) {
         speed = this.style.speed;
         if (this.emphasis) speed *= this.style.emphasisSpeed;
@@ -185,24 +207,10 @@
     Ripple.prototype.setupStroke = function(ctx, completion) {
       if (this.emphasis) {
         ctx.strokeStyle = this.style.emphasisColor;
-        ctx.lineWidth = this.style.baseWidth.blend(completion) * 2 * this.style.emphasisSpeed;
+        return ctx.lineWidth = this.style.baseWidth.blend(completion) * 2 * this.style.emphasisSpeed;
       } else {
         ctx.strokeStyle = this.style.beatColor;
-        ctx.lineWidth = this.style.baseWidth.blend(completion);
-      }
-      return this.swell(ctx);
-    };
-
-    Ripple.prototype.swell = function(ctx) {
-      var beatProgress;
-      if (this.style.swell !== 1) {
-        beatProgress = stage.beat.beatProgress();
-        if (beatProgress < this.style.swellPoint) {
-          beatProgress = beatProgress.normalize(0, this.style.swellPoint);
-        } else {
-          beatProgress = beatProgress.normalize(1, this.style.swellPoint);
-        }
-        return ctx.lineWidth += ctx.lineWidth * this.style.swell * beatProgress;
+        return ctx.lineWidth = this.style.baseWidth.blend(completion);
       }
     };
 

@@ -47,10 +47,12 @@ class @Particles
   
   render: (ctx) ->
     @particles = (p for p in @particles when p.alive)
+    @dead = yes if @expired and @particles.length == 0
+    
     ctx.fillStyle = @style.color
     ctx.strokeStyle = @style.color
     
-    if @lastbeat != stage.beat.beat()
+    if @lastbeat != stage.beat.beat() and not @expired
       @lastbeat = stage.beat.beat()
       @particles.push new Particle(@style) for i in [0..@count]
     

@@ -100,20 +100,18 @@
       }
       return (this - min) / (max - min);
     },
-    limit: function() {
-      return function(min, max) {
-        if (max == null) {
-          max = min;
-          min = 0;
-        }
-        if (this < min) {
-          return min;
-        } else if (this > max) {
-          return max;
-        } else {
-          return this;
-        }
-      };
+    limit: function(min, max) {
+      if (max == null) {
+        max = min;
+        min = 0;
+      }
+      if (this < min) {
+        return min;
+      } else if (this > max) {
+        return max;
+      } else {
+        return this;
+      }
     },
     deg2rad: function() {
       return this * Math.TAU / 360;

@@ -3,20 +3,20 @@
 # Switch branches and merge in master
 `git co gh-pages; git merge master;`
 
-# Generate manifest
-File.open('mandalatron.appcache', 'w+') do |f|
-  f.puts 'CACHE MANIFEST'
-  f.puts "# Version: "+ `git show master`.split("\n").first.gsub(/^commit\s/, '')
-  Dir.entries('.').each do |name|
-    next if name =~ /^\./
-    next if name =~ /\.coffee$/
-    next if name == 'deploy'
-    f.puts name
-  end
-end
-
-# Commit app cache
-`git commit -a -m 'appcache update'`
+# # Generate manifest
+# File.open('mandalatron.appcache', 'w+') do |f|
+#   f.puts 'CACHE MANIFEST'
+#   f.puts "# Version: "+ `git show master`.split("\n").first.gsub(/^commit\s/, '')
+#   Dir.entries('.').each do |name|
+#     next if name =~ /^\./
+#     next if name =~ /\.coffee$/
+#     next if name == 'deploy'
+#     f.puts name
+#   end
+# end
+# 
+# # Commit app cache
+# `git commit -a -m 'appcache update'`
 
 # Push
 `git push`
