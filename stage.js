@@ -38,6 +38,7 @@
       this.ctx.scale(this.canvas.width / 200, this.canvas.height / (200 / aspect));
       this.frames = 0;
       this.start = now();
+      this.layers = [];
       setInterval(this.showFps, 5000);
       setTimeout(function() {
         _this.refresh();
@@ -47,19 +48,24 @@
     }
 
     Stage.prototype.refresh = function(options) {
-      var i, klass, maxLayers;
+      var i, klass, layer, maxLayers, _i, _len, _ref, _ref2;
       var _this = this;
       if (options == null) options = {};
-      if (options.randomize || !(Random.seedValue != null)) Random.seed();
-      if (options.beat || !(this.beat != null)) {
+      if (options.randomize || !Random.seedValue) Random.seed();
+      if (options.beat || !this.beat) {
         this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
       }
-      this.mainHue = Random.int(360);
-      this.layers = [];
-      this.layers.push(new Backdrop());
-      maxLayers = Random.int(3, 6);
+      if (options.color || !this.mainHue) this.mainHue = Random.int(360);
+      _ref = this.layers.slice(1);
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        layer = _ref[_i];
+        layer.expired = true;
+      }
+      if ((_ref2 = this.layers[0]) != null) _ref2.expired = false;
+      if (options.color || !this.layers[0]) this.layers[0] = new Backdrop();
+      maxLayers = Random.int(4, 7);
       if (this.iPhone) maxLayers = 3;
-      for (i = 0; 0 <= maxLayers ? i <= maxLayers : i >= maxLayers; 0 <= maxLayers ? i++ : i--) {
+      for (i = 0; 0 <= maxLayers ? i < maxLayers : i > maxLayers; 0 <= maxLayers ? i++ : i--) {
         klass = [Ripples, Lattice, Particles].random();
         this.layers.push(new klass());
       }
@@ -81,6 +87,16 @@
       this.ctx.clearRect(-100, -100, 200, 200);
       this.ctx.fillStyle = "hsl(" + this.mainHue + ", 75%, 25%)";
       this.ctx.fillRect(-100, -100, 200, 200);
+      this.layers = (function() {
+        var _i, _len, _ref, _results;
+        _ref = this.layers;
+        _results = [];
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          layer = _ref[_i];
+          if (!layer.dead) _results.push(layer);
+        }
+        return _results;
+      }).call(this);
       _ref = this.layers;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         layer = _ref[_i];

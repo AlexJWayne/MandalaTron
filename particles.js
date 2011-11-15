@@ -71,9 +71,10 @@
         }
         return _results;
       }).call(this);
+      if (this.expired && this.particles.length === 0) this.dead = true;
       ctx.fillStyle = this.style.color;
       ctx.strokeStyle = this.style.color;
-      if (this.lastbeat !== stage.beat.beat()) {
+      if (this.lastbeat !== stage.beat.beat() && !this.expired) {
         this.lastbeat = stage.beat.beat();
         for (i = 0, _ref = this.count; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
           this.particles.push(new Particle(this.style));

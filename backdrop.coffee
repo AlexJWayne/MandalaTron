@@ -20,6 +20,7 @@ class @Backdrop
     @coefCurve = [Curve.low, Curve.high].random()
     
   render: (ctx) ->
+    @dead = yes if @expired
     ctx.render =>
       ctx.globalAlpha = 1.0
       ctx.fillStyle = @createGradient ctx

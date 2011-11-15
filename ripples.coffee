@@ -19,10 +19,6 @@ class @Ripples
       lineJoin:       ['round', 'miter'].random()
       echoes:         [0, Random.int(2, 7, curve:Curve.low2)].random()
       echoDepth:      [1, Random.float(1, 1.5, curve:Curve.low)].random(curve:Curve.low) * [-1, 1].random()
-      
-      # Stroke swell
-      swell:          1 #Random.float(0.8, 1.2)
-      swellPoint:     Random.float(0.2, 0.8)
     
     # Dont animate star radius someimes
     @style.starRadiusDiff = [@style.starRadiusDiff[0]] if Random.float(1) < 0.25
@@ -31,6 +27,13 @@ class @Ripples
       new Ripple { @style, beat: i }
   
   render: (ctx) ->
+    if @expired and not @dead
+      @elements = for e in @elements when not e.dead
+        e.expired = yes
+        e
+      
+      @dead = yes if @elements.length == 0
+    
     ctx.render =>
       ctx.rotate (@rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU
       element.render ctx for element in @elements
@@ -43,8 +46,9 @@ class Ripple
     @emphasis   = options.beat == 0
     @perMeasure = stage.beat.perMeasure
     @bps        = stage.beat.bps
+    @alive      = no
     
-    @offset     = @beat / @perMeasure
+    @offset     = -@beat / @perMeasure
     @lifetime   = @perMeasure / @bps
     
     @startedAt  = stage.beat.startedAt - (@offset * @lifetime)
@@ -94,29 +98,50 @@ class Ripple
     ctx.stroke()
   
   render: (ctx) ->
+    @alive = yes if stage.beat.beat() == @beat
+    return unless @alive
+    
     elapsed = stage.beat.now - @startedAt    
     while elapsed > @lifetime
       elapsed -= @lifetime
       @startedAt += @lifetime
     
+    # Find the animation completion percentage
     completion = elapsed / @lifetime
     
-    if elapsed > 0      
+    # If we are expired, but the animation would normally loop, marke it as dead and abort
+    if completion < @lastCompletion and @expired
+      @dead = yes
+      return
+    
+    # Save the current completion as last
+    @lastCompletion = completion
+    
+    # Ensure we have positive radii
+    if elapsed > 0
+      
+      # Find a speed
       speed = @style.speed
       speed *= @style.emphasisSpeed if @emphasis
       
+      # Alter speed by the desired direction
       if @style.outward
         speed *= @style.motionCurve completion
       else
         speed *= @style.motionCurve 1 - completion
       
+      # Render
       ctx.render =>
+        
+        # Setup render properties
         ctx.globalAlpha = @style.alpha
         ctx.rotate @style.twist.deg2rad() * @beat
         ctx.lineJoin = @style.lineJoin
         
+        # stroke for normal/emphasis beats
         @setupStroke ctx, completion
         
+        # Draw each ripple
         for echo in [0..@style.echoes]
           @drawShape ctx, speed, echo
   
@@ -128,15 +153,3 @@ class Ripple
     else
       ctx.strokeStyle = @style.beatColor
       ctx.lineWidth   = @style.baseWidth.blend(completion)
-    
-    @swell ctx
-  
-  swell: (ctx) ->
-    if @style.swell isnt 1
-      beatProgress = stage.beat.beatProgress()
-      if beatProgress < @style.swellPoint
-        beatProgress = beatProgress.normalize(0, @style.swellPoint)
-      else
-        beatProgress = beatProgress.normalize(1, @style.swellPoint)
-      
-      ctx.lineWidth += ctx.lineWidth * @style.swell * beatProgress

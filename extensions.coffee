@@ -92,7 +92,7 @@ extendPrototype Number,
       
     (this - min) / (max - min)
   
-  limit: -> (min, max) ->
+  limit: (min, max) ->
     unless max?
       max = min
       min = 0

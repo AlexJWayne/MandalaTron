@@ -27,8 +27,21 @@ class @Lattice
       @points.end.push [Math.avg(point[0], next[0]), Math.avg(point[1], next[1])] if point && next
     
   render: (ctx) ->
+    return @dead = yes if @expired && stage.beat.now - @expiredAt > 1/stage.beat.bps
+    
+    @bornAt    ||= stage.beat.now
+    @expiredAt ||= stage.beat.now if @expired
+    
     ctx.render =>
+      width = @width
+      width *=     (stage.beat.now - @bornAt).normalize(0, 1/stage.beat.bps).limit(1)    if stage.beat.now - @bornAt < 1/stage.beat.bps
+      width *= 1 - (stage.beat.now - @expiredAt).normalize(0, 1/stage.beat.bps).limit(1) if stage.beat.now > @expiredAt
+      
+      ctx.strokeStyle = @color
+      ctx.lineWidth   = width
+      ctx.globalAlpha = @alpha
       ctx.rotate (@rotOffset + @rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU
+      
       @renderFan ctx
       
       ctx.render =>
@@ -41,9 +54,6 @@ class @Lattice
       curvedProgression = @twistBeatCurve curvedProgression
       
       ctx.rotate Math.TAU/@segments * curvedProgression
-      ctx.strokeStyle = @color
-      ctx.lineWidth   = @width
-      ctx.globalAlpha = @alpha
       
       for i in [0...@segments]
         @renderCurve ctx
