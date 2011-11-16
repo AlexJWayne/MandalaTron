@@ -48,7 +48,7 @@ class Ripple
     @bps        = stage.beat.bps
     @alive      = no
     
-    @offset     = -@beat / @perMeasure
+    @offset     = if @style.outward then -@beat / @perMeasure else @beat / @perMeasure
     @lifetime   = @perMeasure / @bps
     
     @startedAt  = stage.beat.startedAt - (@offset * @lifetime)
