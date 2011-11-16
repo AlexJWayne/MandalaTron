@@ -116,7 +116,7 @@
       this.perMeasure = stage.beat.perMeasure;
       this.bps = stage.beat.bps;
       this.alive = false;
-      this.offset = this.style.outward ? -this.beat / this.perMeasure : this.beat / this.perMeasure;
+      this.offset = -this.beat / this.perMeasure;
       this.lifetime = this.perMeasure / this.bps;
       this.startedAt = stage.beat.startedAt - (this.offset * this.lifetime);
     }
