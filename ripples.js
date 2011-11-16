@@ -34,9 +34,9 @@
         ngon: Random.int(3, 12),
         ngonCurve: [
           0, Random.float(0.2, 1, {
-            curve: Curve.high3
+            curve: Curve.high2
           }), Random.float(1, 2.5, {
-            curve: Curve.low3
+            curve: Curve.low2
           })
         ].random(),
         starRadiusDiff: [Random.float(0.4, 2), Random.float(0.4, 2)],

@@ -5,6 +5,7 @@
 
     function Stage() {
       this.stop = __bind(this.stop, this);
+      this.start = __bind(this.start, this);
       this.showFps = __bind(this.showFps, this);
       this.render = __bind(this.render, this);
       this.refresh = __bind(this.refresh, this);
@@ -59,7 +60,7 @@
           this.canvas.className = 'fullscreen';
         }
         if (this.config.vid) {
-          $('video').innerHTML = '<embed src="http://www.youtube.com/e/' + this.config.vid + '?version=3&enablejsapi=1&playerapiid=videoplayer" type="application/x-shockwave-flash" width="480" height="274" allowscriptaccess="always" allowfullscreen="true" id="videoplayer"></embed>';
+          $('video').innerHTML = '<embed src="http://www.youtube.com/e/' + this.config.vid + '?version=3&enablejsapi=1&playerapiid=videoplayer" type="application/x-shockwave-flash" width="853" height="480" allowscriptaccess="always" allowfullscreen="true" id="videoplayer"></embed>';
           window.onYouTubePlayerReady = function() {
             var player;
             player = $('videoplayer');
@@ -69,14 +70,12 @@
             }, 1500);
           };
           return window.onYouTubePlayerStateChange = function(state) {
+            var player;
             if (state.toString() === '1') {
-              if (_this.config.vidt) {
-                return setTimeout((function() {
-                  return _this.start();
-                }), parseFloat(_this.config.vidt) * 1000);
-              } else {
-                return _this.start();
-              }
+              player = $('videoplayer');
+              player.width = 480;
+              player.height = 32;
+              return setTimeout(_this.start, (parseFloat(_this.config.vidt) * 1000) || 0);
             }
           };
         }
@@ -145,9 +144,11 @@
 
     Stage.prototype.showFps = function() {
       var fps, rightNow;
+      this.fps || (this.fps = $('fps'));
       rightNow = now();
-      fps = this.frames / (rightNow - this.startedAt);
-      console.log("" + (Math.round(fps)) + "fps");
+      fps = Math.round(this.frames / (rightNow - this.startedAt));
+      console.log("" + fps + "FPS");
+      this.fps.innerHTML = fps;
       this.frames = 0;
       return this.startedAt = rightNow;
     };
