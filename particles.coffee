@@ -19,7 +19,8 @@ class @Particles
       
       type:       ['circle', 'arc', 'zoom'].random()
       arcWidth:   [Random.float(3, 30, curve:Curve.low), Random.float(3, 45, curve:Curve.low)]
-    
+      zoomLengthScalar: Random.float(40, 130, curve:Curve.low)
+      
     # Repel from center
     if Random.int(2) == 0
       @style.speed = [0, 0]
@@ -115,7 +116,7 @@ class Particle
     [r, a] = rect2polar @pos...
     ctx.beginPath()
     ctx.moveTo @pos...
-    ctx.lineTo polar2rect(r + @arcWidth * 0.75, a)...
+    ctx.lineTo polar2rect(r + @arcWidth * r.normalize(@style.zoomLengthScalar), a)...
     ctx.stroke()
    
   update: (ctx) ->

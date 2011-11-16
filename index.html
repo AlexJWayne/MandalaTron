@@ -48,6 +48,10 @@
         color: yellow;
       }
       
+      #fps {
+        color: white;
+      }
+      
     </style>
     <style type="text/css" media="screen">
       @media only screen and (max-device-width: 480px) {
@@ -64,6 +68,7 @@
     <canvas id="canvas" width="800" height="600"></canvas>
     
     <form onsubmit="stage.refresh({ beat:true, randomize:false }); return false;">
+      <span id="fps">0</span>fps
       <label>
         Beats/Minute:
         <input type="textfield" id="bpm" value="60">

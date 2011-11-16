@@ -72,21 +72,22 @@ class @Stage
       
       if @config.vid
         $('video').innerHTML =
-          '<embed src="http://www.youtube.com/e/' + @config.vid + '?version=3&enablejsapi=1&playerapiid=videoplayer" type="application/x-shockwave-flash" width="480" height="274" allowscriptaccess="always" allowfullscreen="true" id="videoplayer"></embed>'
+          '<embed src="http://www.youtube.com/e/' + @config.vid + '?version=3&enablejsapi=1&playerapiid=videoplayer" type="application/x-shockwave-flash" width="853" height="480" allowscriptaccess="always" allowfullscreen="true" id="videoplayer"></embed>'
         
         window.onYouTubePlayerReady = ->
           player = $('videoplayer')
           setTimeout ->
             player.playVideo()
-            player.addEventListener 'onStateChange', 'onYouTubePlayerStateChange'
-          , 1500
+            player.addEventListener 'onStateChange', 'onYouTubePlayerStateChange'            
+          , 1500          
         
         window.onYouTubePlayerStateChange = (state) =>
           if state.toString() == '1'
-            if @config.vidt
-              setTimeout (=> @start()), parseFloat(@config.vidt) * 1000
-            else
-              @start()
+            player = $('videoplayer')
+            player.width = 480
+            player.height = 32
+            
+            setTimeout @start, (parseFloat(@config.vidt) * 1000) || 0
     
   
   refresh: (options = {}) =>
@@ -144,14 +145,16 @@ class @Stage
     requestAnimFrame @render, @canvas
       
   showFps: =>
+    @fps ||= $('fps')
     rightNow = now()
-    fps = @frames / (rightNow - @startedAt)
-    console.log "#{ Math.round fps }fps"
+    fps = Math.round @frames / (rightNow - @startedAt)
+    console.log "#{ fps }FPS"
+    @fps.innerHTML = fps
     
     @frames = 0
     @startedAt  = rightNow
   
-  start: ->
+  start: =>
     setTimeout =>
       # Create actors
       @refresh()

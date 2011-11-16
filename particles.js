@@ -29,7 +29,10 @@
           }), Random.float(3, 45, {
             curve: Curve.low
           })
-        ]
+        ],
+        zoomLengthScalar: Random.float(40, 130, {
+          curve: Curve.low
+        })
       };
       if (Random.int(2) === 0) {
         this.style.speed = [0, 0];
@@ -154,7 +157,7 @@
       _ref = rect2polar.apply(null, this.pos), r = _ref[0], a = _ref[1];
       ctx.beginPath();
       ctx.moveTo.apply(ctx, this.pos);
-      ctx.lineTo.apply(ctx, polar2rect(r + this.arcWidth * 0.75, a));
+      ctx.lineTo.apply(ctx, polar2rect(r + this.arcWidth * r.normalize(this.style.zoomLengthScalar), a));
       return ctx.stroke();
     };
 
