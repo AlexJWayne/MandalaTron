@@ -29,6 +29,10 @@
     };
   })();
 
+  window.$ = function() {
+    return document.getElementById.apply(document, arguments);
+  };
+
   window.now = function() {
     return new Date().getTime() / 1000;
   };

@@ -2,7 +2,7 @@
 class @Stage
   constructor: ->
     # Fetch canvas
-    @canvas = document.getElementById 'canvas'
+    @canvas = $('canvas')
     @canvas.width = 800
     @canvas.height = 600
     
@@ -13,7 +13,7 @@ class @Stage
       @iPhone = yes
       
       # Turn on autocycler
-      document.getElementById('cycle').checked = yes
+      $('cycle').checked = yes
       
       # refresh on orientation change
       window.onorientationchange = -> window.location.reload yes
@@ -21,9 +21,9 @@ class @Stage
       # disable scrolling
       @canvas.ontouchmove = (e) -> e.preventDefault()
       
-      # Remove the music iframe
-      music = document.getElementById('music')
-      music.parentNode.removeChild music
+      # # Remove the music iframe
+      # music = $('music')
+      # music.parentNode.removeChild music
       
       # size canvas properly
       if document.body.clientWidth == 320
@@ -44,41 +44,72 @@ class @Stage
     
     # Setup timings
     @frames = 0
-    @start  = now()
+    @startedAt  = now()
     @layers = []
     
     # Setup FPS reporter
     setInterval @showFps, 5000
     
-    setTimeout =>
-      # Create actors
-      @refresh()
+    @setup()
+    @start() unless @config.vid
+  
+  # Read the query string for some initial values
+  setup: ->
+    @config = {}
+    if query = window.location.search[1..-1]
+      pairs = query.split '&'
       
-      # Set seed link
-      document.getElementById('link').innerHTML = "#{ window.location.href.split('#')[0] }##{ Random.seedValue }"
+      for pair in pairs
+        [key, value] = pair.split '='
+        @config[key] = value
       
-      # Start the render loop
-      @render()
+      $('bpm').value     = @config.bpm     if @config.bpm
+      $('measure').value = @config.measure if @config.measure
       
-    , 0
+      if @config.fullscreen
+        $('fullscreen').checked = yes
+        @canvas.className = 'fullscreen'
       
+      if @config.vid
+        $('video').innerHTML =
+          '<embed src="http://www.youtube.com/e/' + @config.vid + '?version=3&enablejsapi=1&playerapiid=videoplayer" type="application/x-shockwave-flash" width="480" height="274" allowscriptaccess="always" allowfullscreen="true" id="videoplayer"></embed>'
+        
+        window.onYouTubePlayerReady = ->
+          player = $('videoplayer')
+          setTimeout ->
+            player.playVideo()
+            player.addEventListener 'onStateChange', 'onYouTubePlayerStateChange'
+          , 1500
+        
+        window.onYouTubePlayerStateChange = (state) =>
+          if state.toString() == '1'
+            if @config.vidt
+              setTimeout (=> @start()), parseFloat(@config.vidt) * 1000
+            else
+              @start()
     
+  
   refresh: (options = {}) =>
     if options.randomize or !Random.seedValue
       Random.seed()
     
     if options.beat or !@beat
       @beat = new Beat(
-                parseFloat(document.getElementById('bpm').value)
-                parseFloat(document.getElementById('measure').value)
+                parseFloat($('bpm').value)
+                parseFloat($('measure').value)
               ).start()
     
     # Pick a base color
-    @mainHue = Random.int 360 if options.color or !@mainHue
+    if @mainHue
+      @mainHue += Random.int -90, 90
+      @mainHue -= 360 if @mainHue > 360
+      @mainHue += 360 if @mainHue < 0
+    else
+      @mainHue = Random.int 360
     
     # Expire all current layers
     layer.expired = yes for layer in @layers[1..-1]
-    @layers[0]?.expired = no # except the backdrop
+    # @layers[0]?.expired = no # except the backdrop
     
     # Make a new backdrop if its doesnt exist
     @layers[0] = new Backdrop() if options.color or !@layers[0]
@@ -93,7 +124,7 @@ class @Stage
     # Setup a timeout to autocycle if the autocycle box is ticked
     clearTimeout @swapTimeout if @swapTimeout
     @swapTimeout = setInterval =>
-      if document.getElementById('cycle').checked
+      if $('cycle').checked
         @refresh randomize: yes, beat: no
     , @beat.perMeasure/@beat.bps * 4 * 1000
   
@@ -102,13 +133,7 @@ class @Stage
     
     # Keep time
     @beat.update()
-    
-    # Clear
-    @ctx.clearRect -100, -100, 200, 200
-    
-    @ctx.fillStyle = "hsl(#{ @mainHue }, 75%, 25%)"
-    @ctx.fillRect -100, -100, 200, 200
-    
+        
     # Prune dead layers
     @layers = (layer for layer in @layers when not layer.dead)
     
@@ -120,11 +145,24 @@ class @Stage
       
   showFps: =>
     rightNow = now()
-    fps = @frames / (rightNow - @start)
+    fps = @frames / (rightNow - @startedAt)
     console.log "#{ Math.round fps }fps"
     
     @frames = 0
-    @start  = rightNow
+    @startedAt  = rightNow
+  
+  start: ->
+    setTimeout =>
+      # Create actors
+      @refresh()
+      
+      # Set seed link
+      $('link').innerHTML = "#{ window.location.href.split('#')[0] }##{ Random.seedValue }"
+      
+      # Start the render loop
+      @render()
+      
+    , 0
   
   stop: =>
     @render = @showFps = ->

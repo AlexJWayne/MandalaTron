@@ -8,22 +8,19 @@
       this.showFps = __bind(this.showFps, this);
       this.render = __bind(this.render, this);
       this.refresh = __bind(this.refresh, this);
-      var aspect, music;
-      var _this = this;
-      this.canvas = document.getElementById('canvas');
+      var aspect;
+      this.canvas = $('canvas');
       this.canvas.width = 800;
       this.canvas.height = 600;
       if (window.navigator.userAgent.indexOf('iPhone') !== -1) {
         this.iPhone = true;
-        document.getElementById('cycle').checked = true;
+        $('cycle').checked = true;
         window.onorientationchange = function() {
           return window.location.reload(true);
         };
         this.canvas.ontouchmove = function(e) {
           return e.preventDefault();
         };
-        music = document.getElementById('music');
-        music.parentNode.removeChild(music);
         if (document.body.clientWidth === 320) {
           this.canvas.width = 320;
           this.canvas.height = 460;
@@ -37,31 +34,75 @@
       this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
       this.ctx.scale(this.canvas.width / 200, this.canvas.height / (200 / aspect));
       this.frames = 0;
-      this.start = now();
+      this.startedAt = now();
       this.layers = [];
       setInterval(this.showFps, 5000);
-      setTimeout(function() {
-        _this.refresh();
-        document.getElementById('link').innerHTML = "" + (window.location.href.split('#')[0]) + "#" + Random.seedValue;
-        return _this.render();
-      }, 0);
+      this.setup();
+      if (!this.config.vid) this.start();
     }
 
+    Stage.prototype.setup = function() {
+      var key, pair, pairs, query, value, _i, _len, _ref;
+      var _this = this;
+      this.config = {};
+      if (query = window.location.search.slice(1)) {
+        pairs = query.split('&');
+        for (_i = 0, _len = pairs.length; _i < _len; _i++) {
+          pair = pairs[_i];
+          _ref = pair.split('='), key = _ref[0], value = _ref[1];
+          this.config[key] = value;
+        }
+        if (this.config.bpm) $('bpm').value = this.config.bpm;
+        if (this.config.measure) $('measure').value = this.config.measure;
+        if (this.config.fullscreen) {
+          $('fullscreen').checked = true;
+          this.canvas.className = 'fullscreen';
+        }
+        if (this.config.vid) {
+          $('video').innerHTML = '<embed src="http://www.youtube.com/e/' + this.config.vid + '?version=3&enablejsapi=1&playerapiid=videoplayer" type="application/x-shockwave-flash" width="480" height="274" allowscriptaccess="always" allowfullscreen="true" id="videoplayer"></embed>';
+          window.onYouTubePlayerReady = function() {
+            var player;
+            player = $('videoplayer');
+            return setTimeout(function() {
+              player.playVideo();
+              return player.addEventListener('onStateChange', 'onYouTubePlayerStateChange');
+            }, 1500);
+          };
+          return window.onYouTubePlayerStateChange = function(state) {
+            if (state.toString() === '1') {
+              if (_this.config.vidt) {
+                return setTimeout((function() {
+                  return _this.start();
+                }), parseFloat(_this.config.vidt) * 1000);
+              } else {
+                return _this.start();
+              }
+            }
+          };
+        }
+      }
+    };
+
     Stage.prototype.refresh = function(options) {
-      var i, klass, layer, maxLayers, _i, _len, _ref, _ref2;
+      var i, klass, layer, maxLayers, _i, _len, _ref;
       var _this = this;
       if (options == null) options = {};
       if (options.randomize || !Random.seedValue) Random.seed();
       if (options.beat || !this.beat) {
-        this.beat = new Beat(parseFloat(document.getElementById('bpm').value), parseFloat(document.getElementById('measure').value)).start();
+        this.beat = new Beat(parseFloat($('bpm').value), parseFloat($('measure').value)).start();
       }
-      if (options.color || !this.mainHue) this.mainHue = Random.int(360);
+      if (this.mainHue) {
+        this.mainHue += Random.int(-90, 90);
+        if (this.mainHue > 360) this.mainHue -= 360;
+        if (this.mainHue < 0) this.mainHue += 360;
+      } else {
+        this.mainHue = Random.int(360);
+      }
       _ref = this.layers.slice(1);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         layer = _ref[_i];
         layer.expired = true;
       }
-      if ((_ref2 = this.layers[0]) != null) _ref2.expired = false;
       if (options.color || !this.layers[0]) this.layers[0] = new Backdrop();
       maxLayers = Random.int(4, 7);
       if (this.iPhone) maxLayers = 3;
@@ -71,7 +112,7 @@
       }
       if (this.swapTimeout) clearTimeout(this.swapTimeout);
       return this.swapTimeout = setInterval(function() {
-        if (document.getElementById('cycle').checked) {
+        if ($('cycle').checked) {
           return _this.refresh({
             randomize: true,
             beat: false
@@ -84,9 +125,6 @@
       var layer, _i, _len, _ref;
       this.frames++;
       this.beat.update();
-      this.ctx.clearRect(-100, -100, 200, 200);
-      this.ctx.fillStyle = "hsl(" + this.mainHue + ", 75%, 25%)";
-      this.ctx.fillRect(-100, -100, 200, 200);
       this.layers = (function() {
         var _i, _len, _ref, _results;
         _ref = this.layers;
@@ -108,10 +146,19 @@
     Stage.prototype.showFps = function() {
       var fps, rightNow;
       rightNow = now();
-      fps = this.frames / (rightNow - this.start);
+      fps = this.frames / (rightNow - this.startedAt);
       console.log("" + (Math.round(fps)) + "fps");
       this.frames = 0;
-      return this.start = rightNow;
+      return this.startedAt = rightNow;
+    };
+
+    Stage.prototype.start = function() {
+      var _this = this;
+      return setTimeout(function() {
+        _this.refresh();
+        $('link').innerHTML = "" + (window.location.href.split('#')[0]) + "#" + Random.seedValue;
+        return _this.render();
+      }, 0);
     };
 
     Stage.prototype.stop = function() {
