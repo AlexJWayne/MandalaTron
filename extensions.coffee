@@ -20,6 +20,9 @@ window.requestAnimFrame = do ->
   window.msRequestAnimationFrame     ||
   (callback, element) -> setTimeout callback, 1000 / 60
 
+# Easy to type id grabbber
+window.$ = -> document.getElementById.apply document, arguments
+
 # now in seconds
 window.now = -> new Date().getTime() / 1000
 
