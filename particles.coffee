@@ -15,16 +15,18 @@ class @Particles
       maxAlpha: Random.float(0.25, 1, curve:Curve.high)
       
       size:       [Random.float(1, 2), Random.float(2, 8, curve:Curve.low3)]
-      lifetime:   [Random.float(stage.beat.bps/2, stage.beat.bps*2), Random.float(stage.beat.bps/2, stage.beat.bps*2)]
+      lifetime:   [Random.float(0.5, 2) / stage.beat.bps, Random.float(0.5, 2) / stage.beat.bps]
       
       type:       ['circle', 'arc', 'zoom'].random()
       arcWidth:   [Random.float(3, 30, curve:Curve.low), Random.float(3, 45, curve:Curve.low)]
       zoomLengthScalar: Random.float(40, 130, curve:Curve.low)
-      
+    
+    console.log @style.lifetime
+    
     # Repel from center
     if Random.int(2) == 0
       @style.speed = [0, 0]
-      @style.drag = [Random.float(-100, -300), Random.float(-400, -800)]
+      @style.drag = [Random.float(-100, -300) * stage.beat.bps, Random.float(-400, -800) * stage.beat.bps]
       @style.spawnRadius = [0, 0]
     
     # Attract to center

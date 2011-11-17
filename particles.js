@@ -19,7 +19,7 @@
             curve: Curve.low3
           })
         ],
-        lifetime: [Random.float(stage.beat.bps / 2, stage.beat.bps * 2), Random.float(stage.beat.bps / 2, stage.beat.bps * 2)],
+        lifetime: [Random.float(0.5, 2) / stage.beat.bps, Random.float(0.5, 2) / stage.beat.bps],
         type: ['circle', 'arc', 'zoom'].random(),
         arcWidth: [
           Random.float(3, 30, {
@@ -32,9 +32,10 @@
           curve: Curve.low
         })
       };
+      console.log(this.style.lifetime);
       if (Random.int(2) === 0) {
         this.style.speed = [0, 0];
-        this.style.drag = [Random.float(-100, -300), Random.float(-400, -800)];
+        this.style.drag = [Random.float(-100, -300) * stage.beat.bps, Random.float(-400, -800) * stage.beat.bps];
         this.style.spawnRadius = [0, 0];
       } else {
         this.style.speed = [Random.float(0, 80) * stage.beat.bps, Random.float(100, 400) * stage.beat.bps];

@@ -112,7 +112,7 @@
       if (options.color || !this.layers[0]) {
         this.layers[0] = new Backdrop();
       }
-      maxLayers = Random.int(4, 7);
+      maxLayers = Random.int(5, 10);
       if (this.iPhone) {
         maxLayers = 3;
       }
