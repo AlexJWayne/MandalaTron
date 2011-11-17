@@ -1,9 +1,7 @@
 (function() {
   var Particle;
-  var __slice = Array.prototype.slice;
-
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   this.Particles = (function() {
-
     function Particles() {
       this.count = Random.int(40, 250, {
         curve: Curve.low2
@@ -61,7 +59,6 @@
       this.lastbeat = null;
       this.particles = [];
     }
-
     Particles.prototype.render = function(ctx) {
       var i, p, _i, _len, _ref, _ref2, _results;
       this.particles = (function() {
@@ -70,11 +67,15 @@
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           p = _ref[_i];
-          if (p.alive) _results.push(p);
+          if (p.alive) {
+            _results.push(p);
+          }
         }
         return _results;
       }).call(this);
-      if (this.expired && this.particles.length === 0) this.dead = true;
+      if (this.expired && this.particles.length === 0) {
+        this.dead = true;
+      }
       ctx.fillStyle = this.style.color;
       ctx.strokeStyle = this.style.color;
       if (this.lastbeat !== stage.beat.beat() && !this.expired) {
@@ -91,13 +92,9 @@
       }
       return _results;
     };
-
     return Particles;
-
   })();
-
   Particle = (function() {
-
     function Particle(style) {
       this.style = style;
       this.startedAt = stage.beat.now || now();
@@ -112,34 +109,30 @@
       this.lifetime = Random.float.apply(Random, this.style.lifetime);
       this.arcWidth = Random.float.apply(Random, this.style.arcWidth);
     }
-
     Particle.prototype.render = function(ctx) {
-      var livedFor;
-      var _this = this;
+      var lifeProgession, livedFor;
       livedFor = stage.beat.now - this.startedAt;
+      lifeProgession = livedFor / this.lifetime;
       if (livedFor > this.lifetime) {
         return this.alive = false;
-      } else {
-        this.update();
-        return ctx.render(function() {
-          ctx.globalAlpha = _this.style.maxAlpha * Curve.high(1 - (livedFor / _this.lifetime));
-          ctx.rotate(_this.rotation.deg2rad() * (livedFor / _this.lifetime));
-          switch (_this.style.type) {
-            case 'circle':
-              return _this.renderCircle(ctx);
-            case 'arc':
-              return _this.renderArc(ctx);
-            case 'zoom':
-              return _this.renderZoom(ctx);
-          }
-        });
       }
+      this.update();
+      return ctx.render(__bind(function() {
+        ctx.globalAlpha = this.style.maxAlpha * Curve.high(1 - lifeProgession);
+        ctx.rotate(this.rotation.deg2rad() * lifeProgession);
+        switch (this.style.type) {
+          case 'circle':
+            return this.renderCircle(ctx);
+          case 'arc':
+            return this.renderArc(ctx);
+          case 'zoom':
+            return this.renderZoom(ctx);
+        }
+      }, this));
     };
-
     Particle.prototype.renderCircle = function(ctx) {
       return ctx.fillCircle.apply(ctx, __slice.call(this.pos).concat([this.size]));
     };
-
     Particle.prototype.renderArc = function(ctx) {
       var a, r, _ref;
       ctx.lineWidth = this.size * 0.75;
@@ -149,7 +142,6 @@
       ctx.arc(0, 0, r, (a - this.arcWidth).deg2rad(), (a + this.arcWidth).deg2rad());
       return ctx.stroke();
     };
-
     Particle.prototype.renderZoom = function(ctx) {
       var a, r, _ref;
       ctx.lineWidth = this.size * 0.75;
@@ -160,7 +152,6 @@
       ctx.lineTo.apply(ctx, polar2rect(r + this.arcWidth * r.normalize(this.style.zoomLengthScalar), a));
       return ctx.stroke();
     };
-
     Particle.prototype.update = function(ctx) {
       var frameTime, i, _results;
       frameTime = stage.beat.now - this.lastFrame;
@@ -173,9 +164,6 @@
       }
       return _results;
     };
-
     return Particle;
-
   })();
-
 }).call(this);
