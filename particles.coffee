@@ -21,8 +21,6 @@ class @Particles
       arcWidth:   [Random.float(3, 30, curve:Curve.low), Random.float(3, 45, curve:Curve.low)]
       zoomLengthScalar: Random.float(40, 130, curve:Curve.low)
     
-    console.log @style.lifetime
-    
     # Repel from center
     if Random.int(2) == 0
       @style.speed = [0, 0]

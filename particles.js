@@ -32,7 +32,6 @@
           curve: Curve.low
         })
       };
-      console.log(this.style.lifetime);
       if (Random.int(2) === 0) {
         this.style.speed = [0, 0];
         this.style.drag = [Random.float(-100, -300) * stage.beat.bps, Random.float(-400, -800) * stage.beat.bps];
