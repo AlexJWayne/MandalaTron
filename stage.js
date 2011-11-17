@@ -112,11 +112,10 @@
       if (options.color || !this.layers[0]) {
         this.layers[0] = new Backdrop();
       }
-      maxLayers = Random.int(4, 10);
+      maxLayers = Random.int(5, 10);
       if (this.iPhone) {
         maxLayers = 3;
       }
-      maxLayers = 10;
       for (i = 0; 0 <= maxLayers ? i < maxLayers : i > maxLayers; 0 <= maxLayers ? i++ : i--) {
         klass = [Ripples, Lattice, Particles, Orbitals].random();
         this.layers.push(new klass());
