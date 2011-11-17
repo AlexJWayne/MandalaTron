@@ -35,7 +35,7 @@ class @Ripples
       @dead = yes if @elements.length == 0
     
     ctx.render =>
-      ctx.rotate (@rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU
+      ctx.rotate (@rotation * stage.beat.elapsed * stage.beat.bps).deg2rad() % Math.TAU
       element.render ctx for element in @elements
   
 

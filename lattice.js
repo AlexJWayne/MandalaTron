@@ -63,7 +63,7 @@
         ctx.strokeStyle = this.color;
         ctx.lineWidth = width;
         ctx.globalAlpha = this.alpha;
-        ctx.rotate((this.rotOffset + this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
+        ctx.rotate((this.rotOffset + this.rotation * stage.beat.elapsed * stage.beat.bps).deg2rad() % Math.TAU);
         this.renderFan(ctx);
         return ctx.render(__bind(function() {
           ctx.scale(-1, 1);

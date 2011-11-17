@@ -112,8 +112,9 @@ class @Stage
     @layers[0] = new Backdrop() if options.color or !@layers[0]
     
     # Generate some layers
-    maxLayers = Random.int(4, 7)
+    maxLayers = Random.int(4, 10)
     maxLayers = 3 if @iPhone
+    maxLayers = 10
     for i in [0...maxLayers]
       klass = [Ripples, Lattice, Particles, Orbitals].random()
       @layers.push new klass()

@@ -1,9 +1,7 @@
 (function() {
   var Ripple;
-  var __slice = Array.prototype.slice;
-
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   this.Ripples = (function() {
-
     function Ripples() {
       var i;
       this.rotation = Random.float(30, 210, {
@@ -70,10 +68,8 @@
         return _results;
       }).call(this);
     }
-
     Ripples.prototype.render = function(ctx) {
       var e;
-      var _this = this;
       if (this.expired && !this.dead) {
         this.elements = (function() {
           var _i, _len, _ref, _results;
@@ -81,35 +77,36 @@
           _results = [];
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             e = _ref[_i];
-            if (!(!e.dead)) continue;
-            e.expired = true;
-            _results.push(e);
+            if (!e.dead) {
+              e.expired = true;
+              _results.push(e);
+            }
           }
           return _results;
         }).call(this);
-        if (this.elements.length === 0) this.dead = true;
+        if (this.elements.length === 0) {
+          this.dead = true;
+        }
       }
-      return ctx.render(function() {
+      return ctx.render(__bind(function() {
         var element, _i, _len, _ref, _results;
-        ctx.rotate((_this.rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU);
-        _ref = _this.elements;
+        ctx.rotate((this.rotation * stage.beat.elapsed * stage.beat.bps).deg2rad() % Math.TAU);
+        _ref = this.elements;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           element = _ref[_i];
           _results.push(element.render(ctx));
         }
         return _results;
-      });
+      }, this));
     };
-
     return Ripples;
-
   })();
-
   Ripple = (function() {
-
     function Ripple(options) {
-      if (options == null) options = {};
+      if (options == null) {
+        options = {};
+      }
       this.style = options.style;
       this.beat = options.beat;
       this.emphasis = options.beat === 0;
@@ -120,13 +117,16 @@
       this.lifetime = this.perMeasure / this.bps;
       this.startedAt = stage.beat.startedAt - (this.offset * this.lifetime);
     }
-
     Ripple.prototype.drawShape = function(ctx, radius, echo) {
       var angle, completion, controlPointAngle, endPointAngle, i, method, pRadius, points, _ref;
-      if (radius < 0) return;
+      if (radius < 0) {
+        return;
+      }
       ctx.beginPath();
       radius += echo * ctx.lineWidth * this.style.echoDepth;
-      if (radius < 0) radius = 0;
+      if (radius < 0) {
+        radius = 0;
+      }
       ctx.globalAlpha = this.style.alpha * Curve.low((this.style.echoes - echo) / this.style.echoes);
       switch (this.style.shape) {
         case 'circle':
@@ -164,12 +164,14 @@
       }
       return ctx.stroke();
     };
-
     Ripple.prototype.render = function(ctx) {
       var completion, elapsed, speed;
-      var _this = this;
-      if (stage.beat.beat() === this.beat) this.alive = true;
-      if (!this.alive) return;
+      if (stage.beat.beat() === this.beat) {
+        this.alive = true;
+      }
+      if (!this.alive) {
+        return;
+      }
       elapsed = stage.beat.now - this.startedAt;
       while (elapsed > this.lifetime) {
         elapsed -= this.lifetime;
@@ -183,27 +185,28 @@
       this.lastCompletion = completion;
       if (elapsed > 0) {
         speed = this.style.speed;
-        if (this.emphasis) speed *= this.style.emphasisSpeed;
+        if (this.emphasis) {
+          speed *= this.style.emphasisSpeed;
+        }
         if (this.style.outward) {
           speed *= this.style.motionCurve(completion);
         } else {
           speed *= this.style.motionCurve(1 - completion);
         }
-        return ctx.render(function() {
+        return ctx.render(__bind(function() {
           var echo, _ref, _results;
-          ctx.globalAlpha = _this.style.alpha;
-          ctx.rotate(_this.style.twist.deg2rad() * _this.beat);
-          ctx.lineJoin = _this.style.lineJoin;
-          _this.setupStroke(ctx, completion);
+          ctx.globalAlpha = this.style.alpha;
+          ctx.rotate(this.style.twist.deg2rad() * this.beat);
+          ctx.lineJoin = this.style.lineJoin;
+          this.setupStroke(ctx, completion);
           _results = [];
-          for (echo = 0, _ref = _this.style.echoes; 0 <= _ref ? echo <= _ref : echo >= _ref; 0 <= _ref ? echo++ : echo--) {
-            _results.push(_this.drawShape(ctx, speed, echo));
+          for (echo = 0, _ref = this.style.echoes; 0 <= _ref ? echo <= _ref : echo >= _ref; 0 <= _ref ? echo++ : echo--) {
+            _results.push(this.drawShape(ctx, speed, echo));
           }
           return _results;
-        });
+        }, this));
       }
     };
-
     Ripple.prototype.setupStroke = function(ctx, completion) {
       if (this.emphasis) {
         ctx.strokeStyle = this.style.emphasisColor;
@@ -213,9 +216,6 @@
         return ctx.lineWidth = this.style.baseWidth.blend(completion);
       }
     };
-
     return Ripple;
-
   })();
-
 }).call(this);

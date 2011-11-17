@@ -40,7 +40,7 @@ class @Lattice
       ctx.strokeStyle = @color
       ctx.lineWidth   = width
       ctx.globalAlpha = @alpha
-      ctx.rotate (@rotOffset + @rotation * stage.beat.elapsed / stage.beat.bps).deg2rad() % Math.TAU
+      ctx.rotate (@rotOffset + @rotation * stage.beat.elapsed * stage.beat.bps).deg2rad() % Math.TAU
       
       @renderFan ctx
       
