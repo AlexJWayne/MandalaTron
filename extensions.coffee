@@ -77,7 +77,8 @@ extendPrototype Array,
   random: (options = {}) ->
     this[Random.int 0, @length, options]
   
-  blend: (amount) ->
+  blend: (amount, options = {}) ->
+    amount = options.curve amount if options.curve
     if @length >= 2
       blend this[0], this[1], amount
     else if @length == 1

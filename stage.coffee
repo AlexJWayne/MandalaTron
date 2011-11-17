@@ -21,10 +21,6 @@ class @Stage
       # disable scrolling
       @canvas.ontouchmove = (e) -> e.preventDefault()
       
-      # # Remove the music iframe
-      # music = $('music')
-      # music.parentNode.removeChild music
-      
       # size canvas properly
       if document.body.clientWidth == 320
         @canvas.width = 320
@@ -48,7 +44,7 @@ class @Stage
     @layers = []
     
     # Setup FPS reporter
-    setInterval @showFps, 5000
+    setInterval @showFps, 1000
     
     @setup()
     @start() unless @config.vid
@@ -119,8 +115,13 @@ class @Stage
     maxLayers = Random.int(4, 7)
     maxLayers = 3 if @iPhone
     for i in [0...maxLayers]
-      klass = [Ripples, Lattice, Particles].random()
+      klass = [Ripples, Lattice, Particles, Orbitals].random()
       @layers.push new klass()
+    
+    # # TEMP
+    # @layers = [@layers[0]]
+    # @layers.push new Orbitals()
+    
     
     # Setup a timeout to autocycle if the autocycle box is ticked
     clearTimeout @swapTimeout if @swapTimeout
@@ -136,7 +137,7 @@ class @Stage
     @beat.update()
         
     # Prune dead layers
-    @layers = (layer for layer in @layers when not layer.dead)
+    @layers = (layer for layer in @layers when not layer.dead)    
     
     # Render all layers
     layer.render @ctx for layer in @layers
@@ -145,10 +146,9 @@ class @Stage
     requestAnimFrame @render, @canvas
       
   showFps: =>
-    @fps ||= $('fps')
+    @fps ||= $('fpscount')
     rightNow = now()
     fps = Math.round @frames / (rightNow - @startedAt)
-    console.log "#{ fps }FPS"
     @fps.innerHTML = fps
     
     @frames = 0

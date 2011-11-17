@@ -2,7 +2,7 @@ class @Lattice
   constructor: ->
     @rotation       = Random.float(10, 60, curve:Curve.low) * [1, -1].random()
     @rotOffset      = Random.float(0, @rotOffset)
-    @twist          = Random.float(45, 450, curve: Curve.low) * [1, -1].random()
+    @twist          = Random.float(30, 450, curve: Curve.low) * [1, -1].random()
     @twistBeatCurve = [Curve.linear, Curve.ease2, Curve.ease3].random(curve:Curve.low2)
     @segments       = Random.int 3, 12
     @color          = new HSL((stage.mainHue + 180) % 360, Random.float(100), Random.float(100)).toString()
@@ -11,7 +11,7 @@ class @Lattice
     @alpha          = Random.float(0.35, 1)
     @curves =
       r: Curve.low3
-      a: [Curve.low2, Curve.low3, Curve.linear, Curve.high2, Curve.high3].random()
+      a: [Curve.low5, Curve.low4, Curve.low3, Curve.low2, Curve.linear, Curve.high2, Curve.high3, Curve.high4, Curve.high5].random()
     
     step = 0.05
     

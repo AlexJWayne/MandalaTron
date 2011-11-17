@@ -76,25 +76,24 @@ class Particle
     
   render: (ctx) ->
     livedFor = stage.beat.now - @startedAt
-    if livedFor > @lifetime
-      @alive = no
+    lifeProgession = livedFor / @lifetime
+    return @alive = no if livedFor > @lifetime
       
-    else
-      @update()
+    @update()
+    
+    ctx.render =>
+      ctx.globalAlpha = @style.maxAlpha * Curve.high(1 - lifeProgession)
+      ctx.rotate @rotation.deg2rad() * lifeProgession
       
-      ctx.render =>
-        ctx.globalAlpha = @style.maxAlpha * Curve.high(1 - (livedFor / @lifetime))
-        ctx.rotate @rotation.deg2rad() * (livedFor / @lifetime)
-        
-        switch @style.type
-          when 'circle'
-            @renderCircle ctx
-            
-          when 'arc'
-            @renderArc ctx
+      switch @style.type
+        when 'circle'
+          @renderCircle ctx
           
-          when 'zoom'
-            @renderZoom ctx
+        when 'arc'
+          @renderArc ctx
+        
+        when 'zoom'
+          @renderZoom ctx
             
     
   renderCircle: (ctx) ->
