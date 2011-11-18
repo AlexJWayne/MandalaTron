@@ -30,6 +30,33 @@ window.now = -> new Date().getTime() / 1000
 window.blend = (start, end, amount) ->
   start * (1 - amount) + end * amount
 
+# Accurate Interval, guaranteed not to drift!
+# (Though each call can still be a few milliseconds late)
+window.accurateInterval = (time, fn) ->
+  
+  # This value is the next time the the timer should fire.
+  nextAt = new Date().getTime() + time
+  
+  # Allow arguments to be passed in in either order.
+  if typeof time is 'function'
+    [fn, time] = [time, fn]
+  
+  # Create a function that wraps our function to run.  This is responsible for
+  # scheduling the next call and aborting when canceled.
+  wrapper = ->
+    nextAt += time
+    wrapper.timeout = setTimeout wrapper, nextAt - new Date().getTime()
+    fn()
+  
+  # Clear the next call when canceled.
+  wrapper.cancel = -> clearTimeout wrapper.timeout
+  
+  # Schedule the first call.
+  setTimeout wrapper, nextAt - new Date().getTime()
+  
+  # Return the wrapper function so cancel() can later be called on it.
+  return wrapper
+
 # Convert
 window.polar2rect = Math.polar2rect = (r, a) ->
   a = a.deg2rad()

@@ -1,12 +1,22 @@
 (function() {
   var Ripple;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   this.Ripples = (function() {
+    __extends(Ripples, Layer);
     function Ripples() {
       var i;
+      Ripples.__super__.constructor.apply(this, arguments);
       this.rotation = Random.float(30, 210, {
         curve: Curve.low2
       }) * [1, -1].random();
+      this.composite = ['source-over', ['lighter', 'darker', 'xor'].random()].random();
       this.style = {
         speed: Random.float(160, 300, {
           curve: Curve.low
@@ -41,10 +51,12 @@
         twist: Random.float(5, 45) * [1, -1].random(),
         lineJoin: ['round', 'miter'].random(),
         echoes: [
-          0, Random.int(2, 7, {
-            curve: Curve.low2
-          })
-        ].random(),
+          Random.int(3, 10, {
+            curve: Curve.low
+          }), 0
+        ].random({
+          curve: Curve.low3
+        }),
         echoDepth: [
           1, Random.float(1, 1.5, {
             curve: Curve.low
@@ -68,9 +80,20 @@
         return _results;
       }).call(this);
     }
+    Ripples.prototype.expire = function() {
+      var e, _i, _len, _ref;
+      Ripples.__super__.expire.apply(this, arguments);
+      _ref = this.elements;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        e = _ref[_i];
+        if (!e.dead) {
+          e.expired = true;
+        }
+      }
+    };
     Ripples.prototype.render = function(ctx) {
       var e;
-      if (this.expired && !this.dead) {
+      if (this.expired) {
         this.elements = (function() {
           var _i, _len, _ref, _results;
           _ref = this.elements;
@@ -78,18 +101,18 @@
           for (_i = 0, _len = _ref.length; _i < _len; _i++) {
             e = _ref[_i];
             if (!e.dead) {
-              e.expired = true;
               _results.push(e);
             }
           }
           return _results;
         }).call(this);
         if (this.elements.length === 0) {
-          this.dead = true;
+          this.kill();
         }
       }
       return ctx.render(__bind(function() {
         var element, _i, _len, _ref, _results;
+        ctx.globalCompositeOperation = this.composite;
         ctx.rotate((this.rotation * stage.beat.elapsed * stage.beat.bps).deg2rad() % Math.TAU);
         _ref = this.elements;
         _results = [];

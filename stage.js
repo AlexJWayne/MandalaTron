@@ -34,6 +34,7 @@
       this.frames = 0;
       this.startedAt = now();
       this.layers = [];
+      this.totalMeasures = 0;
       setInterval(this.showFps, 1000);
       this.setup();
       if (!this.config.vid) {
@@ -82,6 +83,31 @@
         }
       }
     };
+    Stage.prototype.onBeat = function(beatNumber) {
+      var layer, _i, _len, _ref;
+      _ref = this.layers;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        layer = _ref[_i];
+        layer.onBeat(beatNumber);
+      }
+    };
+    Stage.prototype.onMeasure = function() {
+      var layer, _i, _len, _ref;
+      this.totalMeasures++;
+      _ref = this.layers;
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        layer = _ref[_i];
+        layer.onMesure;
+      }
+      if (this.totalMeasures % 4 === 0) {
+        if ($('cycle').checked) {
+          return this.refresh({
+            randomize: true,
+            beat: false
+          });
+        }
+      }
+    };
     Stage.prototype.refresh = function(options) {
       var i, klass, layer, maxLayers, _i, _len, _ref;
       if (options == null) {
@@ -91,7 +117,7 @@
         Random.seed();
       }
       if (options.beat || !this.beat) {
-        this.beat = new Beat(parseFloat($('bpm').value), parseFloat($('measure').value)).start();
+        this.beat = new Beat(parseFloat($('bpm').value), parseFloat($('measure').value));
       }
       if (this.mainHue) {
         this.mainHue += Random.int(-90, 90);
@@ -107,7 +133,7 @@
       _ref = this.layers.slice(1);
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         layer = _ref[_i];
-        layer.expired = true;
+        layer.expire();
       }
       if (options.color || !this.layers[0]) {
         this.layers[0] = new Backdrop();
@@ -120,17 +146,9 @@
         klass = [Ripples, Lattice, Particles, Orbitals].random();
         this.layers.push(new klass());
       }
-      if (this.swapTimeout) {
-        clearTimeout(this.swapTimeout);
+      if (!this.beat.started) {
+        return this.beat.start();
       }
-      return this.swapTimeout = setInterval(__bind(function() {
-        if ($('cycle').checked) {
-          return this.refresh({
-            randomize: true,
-            beat: false
-          });
-        }
-      }, this), this.beat.perMeasure / this.beat.bps * 4 * 1000);
     };
     Stage.prototype.render = function() {
       var layer, _i, _len, _ref;

@@ -1,6 +1,9 @@
-class @Particles
+class @Particles extends Layer
   constructor: ->
-    @count = Random.int(40, 250, curve:Curve.low2)
+    super
+    
+    @count = Random.int(40, 200, curve:Curve.low)
+    @composite = ['source-over', ['lighter', 'darker'].random()].random()
     
     @style =
       rotation: [
@@ -20,6 +23,9 @@ class @Particles
       type:       ['circle', 'arc', 'zoom'].random()
       arcWidth:   [Random.float(3, 30, curve:Curve.low), Random.float(3, 45, curve:Curve.low)]
       zoomLengthScalar: Random.float(40, 130, curve:Curve.low)
+    
+    # If compositing lighter or darker, dont be so opaque
+    @style.alpha /= 2 if @composite is 'lighter' or @composite is 'darker'    
     
     # Repel from center
     if Random.int(2) == 0
@@ -42,27 +48,27 @@ class @Particles
       when 'arc'
         @count *= 0.6
     
-    
-    @lastbeat = null
     @particles = []
   
+  onBeat: ->
+    return if @expired
+    @particles.push new Particle(@style) for i in [0..@count]
+    return
+  
   render: (ctx) ->
-    @particles = (p for p in @particles when p.alive)
-    @dead = yes if @expired and @particles.length == 0
-    
-    ctx.fillStyle = @style.color
-    ctx.strokeStyle = @style.color
-    
-    if @lastbeat != stage.beat.beat() and not @expired
-      @lastbeat = stage.beat.beat()
-      @particles.push new Particle(@style) for i in [0..@count]
-    
-    p.render ctx for p in @particles
+    ctx.render =>
+      @particles = (p for p in @particles when p.alive)
+      @kill() if @expired and @particles.length == 0
+      
+      ctx.fillStyle = @style.color
+      ctx.strokeStyle = @style.color
+      ctx.globalCompositeOperation = @composite
+      
+      p.render ctx for p in @particles
     
 class Particle
   constructor: (@style) ->
     @startedAt = stage.beat.now || now()
-    @lastFrame = stage.beat.now || now()
     @alive     = yes
     
     @angle     = Random.float(360)
@@ -119,11 +125,8 @@ class Particle
     ctx.stroke()
    
   update: (ctx) ->
-    frameTime = stage.beat.now - @lastFrame
-    @lastFrame = stage.beat.now
-  
     @dragVel = polar2rect @drag, @angle
   
     for i in [0..1]
-      @vel[i] -= @dragVel[i] * frameTime
-      @pos[i] += @vel[i]     * frameTime
+      @vel[i] -= @dragVel[i] * stage.beat.frameTime()
+      @pos[i] += @vel[i]     * stage.beat.frameTime()

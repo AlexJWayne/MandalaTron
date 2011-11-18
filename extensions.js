@@ -33,6 +33,23 @@
   window.blend = function(start, end, amount) {
     return start * (1 - amount) + end * amount;
   };
+  window.accurateInterval = function(time, fn) {
+    var nextAt, wrapper, _ref;
+    nextAt = new Date().getTime() + time;
+    if (typeof time === 'function') {
+      _ref = [time, fn], fn = _ref[0], time = _ref[1];
+    }
+    wrapper = function() {
+      nextAt += time;
+      wrapper.timeout = setTimeout(wrapper, nextAt - new Date().getTime());
+      return fn();
+    };
+    wrapper.cancel = function() {
+      return clearTimeout(wrapper.timeout);
+    };
+    setTimeout(wrapper, nextAt - new Date().getTime());
+    return wrapper;
+  };
   window.polar2rect = Math.polar2rect = function(r, a) {
     a = a.deg2rad();
     return [r * Math.cos(a), r * Math.sin(a)];
