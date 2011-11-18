@@ -1,33 +1,60 @@
 (function() {
   var Orbital;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   this.Orbitals = (function() {
+    __extends(Orbitals, Layer);
     function Orbitals() {
+      Orbitals.__super__.constructor.apply(this, arguments);
       this.orbitals = [];
-      this.lastbeat = -1;
+      this.beats = 0;
+      this.composite = ['source-over', ['lighter', 'darker'].random()].random();
       this.rotation = Random.float(0, 360);
       while (!(Math.abs(this.twist + 360 / stage.beat.perMeasure) > 30)) {
         this.twist = Random.float(20, 270) * [1, -1].random();
       }
-      this.count = Random.int(3, 9);
+      this.count = Random.int(3, 12, {
+        curve: Curve.low2
+      });
       this.mirror = [true, false].random();
       this.style = {
         color: [new HSL(stage.mainHue + Random.float(150, 210), Random.float(75, 100), 50).toString(), new HSL(stage.mainHue + Random.float(150, 210), Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()].random(),
-        size: Random.float(8, 25, {
+        size: Random.float(8, 20, {
           curve: Curve.low2
         }),
         radius: [],
         radiusCurve: [Curve.low3, Curve.low2, Curve.low, Curve.linear, Curve.high, Curve.high2, Curve.high3].random(),
         lifetime: Random.float(0.5, stage.beat.perMeasure) / stage.beat.bps,
-        alpha: Random.float(0.4, 0.9),
+        alpha: Random.float(0.4, 0.75),
         alphaBlendPoint: Random.float(0.1, 0.9),
         shape: ['circle', 'square'].random(),
-        shapeAspect: Random.float(0.5, 2)
+        shapeAspect: Random.float(0.5, 2),
+        beatRotation: Random.float(5, 45, {
+          curve: Curve.low3
+        }),
+        strokeWidth: [0, Random.float(0.5, 5)].random(),
+        echoes: [Random.int(0, 4)].random()
       };
+      if (this.composite === 'lighter' || this.composite === 'darker') {
+        this.style.alpha /= 2;
+      }
       while (!(Math.abs(this.style.radius[0] - this.style.radius[1]) > 50)) {
-        this.style.radius = [Random.float(20, 150), Random.float(20, 150)];
+        this.style.radius = [Random.float(10, 150), Random.float(10, 150)];
       }
     }
+    Orbitals.prototype.onBeat = function() {
+      if (this.expired) {
+        return;
+      }
+      this.orbitals.push(new Orbital(this.style, this.beats));
+      return this.beats++;
+    };
     Orbitals.prototype.render = function(ctx) {
       var orbital;
       this.orbitals = (function() {
@@ -43,20 +70,19 @@
         return _results;
       }).call(this);
       if (this.expired && this.orbitals.length === 0) {
-        this.dead = true;
+        this.kill();
       }
-      if (stage.beat.beat() !== this.lastbeat && !this.expired) {
-        this.lastbeat = stage.beat.beat();
-        this.orbitals.push(new Orbital(this.style));
-      }
-      this.renderGroup(ctx);
-      if (this.mirror) {
-        return ctx.render(__bind(function() {
-          ctx.scale(-1, 1);
-          ctx.rotate(this.rotation.deg2rad());
-          return this.renderGroup(ctx);
-        }, this));
-      }
+      return ctx.render(__bind(function() {
+        ctx.globalCompositeOperation = this.composite;
+        this.renderGroup(ctx);
+        if (this.mirror) {
+          return ctx.render(__bind(function() {
+            ctx.scale(-1, 1);
+            ctx.rotate(this.rotation.deg2rad());
+            return this.renderGroup(ctx);
+          }, this));
+        }
+      }, this));
     };
     Orbitals.prototype.renderGroup = function(ctx) {
       var i, twist, _ref;
@@ -78,14 +104,15 @@
     return Orbitals;
   })();
   Orbital = (function() {
-    function Orbital(style) {
+    function Orbital(style, beats) {
       this.style = style;
       this.alive = true;
       this.startedAt = stage.beat.now;
       this.a = 360 / stage.beat.perMeasure * stage.beat.beat();
+      this.a += this.style.beatRotation * beats;
     }
     Orbital.prototype.render = function(ctx) {
-      var alphaScalar, lifetimeProgress, livedFor, x, y, _ref;
+      var alphaScalar, i, lifetimeProgress, livedFor, size, x, y, _ref, _ref2, _results;
       livedFor = stage.beat.now - this.startedAt;
       if (livedFor > this.style.lifetime) {
         return this.alive = false;
@@ -97,12 +124,19 @@
       _ref = Math.polar2rect(this.style.radius.blend(lifetimeProgress, {
         curve: this.style.radiusCurve
       }), this.a), x = _ref[0], y = _ref[1];
-      switch (this.style.shape) {
-        case 'circle':
-          return ctx.fillCircle(x, y, this.style.size);
-        case 'square':
-          return ctx.fillRect(x - this.style.size, y - this.style.size, this.style.size * 2, this.style.size * 2);
+      _results = [];
+      for (i = 0, _ref2 = this.style.echoes; 0 <= _ref2 ? i <= _ref2 : i >= _ref2; 0 <= _ref2 ? i++ : i--) {
+        _results.push((function() {
+          switch (this.style.shape) {
+            case 'circle':
+              return ctx.fillCircle(x, y, this.style.size + this.style.size * 0.2 * i);
+            case 'square':
+              size = this.style.size + this.style.size * 0.2 * i;
+              return ctx.fillRect(x - size, y - size, size * 2, size * 2);
+          }
+        }).call(this));
       }
+      return _results;
     };
     return Orbital;
   })();

@@ -42,6 +42,7 @@ class @Stage
     @frames = 0
     @startedAt  = now()
     @layers = []
+    @totalMeasures = 0
     
     # Setup FPS reporter
     setInterval @showFps, 1000
@@ -86,6 +87,19 @@ class @Stage
             setTimeout @start, (parseFloat(@config.vidt) * 1000) || 0
     
   
+  onBeat: (beatNumber) ->
+    layer.onBeat beatNumber for layer in @layers
+    return
+  
+  onMeasure: ->
+    @totalMeasures++
+    layer.onMesure for layer in @layers
+    
+    # Setup a timeout to autocycle if the autocycle box is ticked
+    if @totalMeasures % 4 is 0
+      if $('cycle').checked
+        @refresh randomize: yes, beat: no
+  
   refresh: (options = {}) =>
     if options.randomize or !Random.seedValue
       Random.seed()
@@ -94,7 +108,7 @@ class @Stage
       @beat = new Beat(
                 parseFloat($('bpm').value)
                 parseFloat($('measure').value)
-              ).start()
+              )
     
     # Pick a base color
     if @mainHue
@@ -105,8 +119,7 @@ class @Stage
       @mainHue = Random.int 360
     
     # Expire all current layers
-    layer.expired = yes for layer in @layers[1..-1]
-    # @layers[0]?.expired = no # except the backdrop
+    layer.expire() for layer in @layers[1..-1]
     
     # Make a new backdrop if its doesnt exist
     @layers[0] = new Backdrop() if options.color or !@layers[0]
@@ -120,15 +133,9 @@ class @Stage
     
     # # TEMP
     # @layers = [@layers[0]]
-    # @layers.push new Orbitals()
+    # @layers.push new Lattice()
     
-    
-    # Setup a timeout to autocycle if the autocycle box is ticked
-    clearTimeout @swapTimeout if @swapTimeout
-    @swapTimeout = setInterval =>
-      if $('cycle').checked
-        @refresh randomize: yes, beat: no
-    , @beat.perMeasure/@beat.bps * 4 * 1000
+    @beat.start() unless @beat.started
   
   render: =>
     @frames++

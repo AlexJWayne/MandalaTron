@@ -1,11 +1,21 @@
 (function() {
   var Particle;
-  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
+  var __hasProp = Object.prototype.hasOwnProperty, __extends = function(child, parent) {
+    for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; }
+    function ctor() { this.constructor = child; }
+    ctor.prototype = parent.prototype;
+    child.prototype = new ctor;
+    child.__super__ = parent.prototype;
+    return child;
+  }, __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; }, __slice = Array.prototype.slice;
   this.Particles = (function() {
+    __extends(Particles, Layer);
     function Particles() {
-      this.count = Random.int(40, 250, {
-        curve: Curve.low2
+      Particles.__super__.constructor.apply(this, arguments);
+      this.count = Random.int(40, 200, {
+        curve: Curve.low
       });
+      this.composite = ['source-over', ['lighter', 'darker'].random()].random();
       this.style = {
         rotation: [[Random.float(-270, 270), Random.float(-270, 270)], [0, 0]].random({
           curve: Curve.low2
@@ -32,7 +42,9 @@
           curve: Curve.low
         })
       };
-      console.log(this.style.lifetime);
+      if (this.composite === 'lighter' || this.composite === 'darker') {
+        this.style.alpha /= 2;
+      }
       if (Random.int(2) === 0) {
         this.style.speed = [0, 0];
         this.style.drag = [Random.float(-100, -300) * stage.beat.bps, Random.float(-400, -800) * stage.beat.bps];
@@ -57,41 +69,46 @@
         case 'arc':
           this.count *= 0.6;
       }
-      this.lastbeat = null;
       this.particles = [];
     }
+    Particles.prototype.onBeat = function() {
+      var i, _ref;
+      if (this.expired) {
+        return;
+      }
+      for (i = 0, _ref = this.count; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+        this.particles.push(new Particle(this.style));
+      }
+    };
     Particles.prototype.render = function(ctx) {
-      var i, p, _i, _len, _ref, _ref2, _results;
-      this.particles = (function() {
-        var _i, _len, _ref, _results;
+      return ctx.render(__bind(function() {
+        var p, _i, _len, _ref, _results;
+        this.particles = (function() {
+          var _i, _len, _ref, _results;
+          _ref = this.particles;
+          _results = [];
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            p = _ref[_i];
+            if (p.alive) {
+              _results.push(p);
+            }
+          }
+          return _results;
+        }).call(this);
+        if (this.expired && this.particles.length === 0) {
+          this.kill();
+        }
+        ctx.fillStyle = this.style.color;
+        ctx.strokeStyle = this.style.color;
+        ctx.globalCompositeOperation = this.composite;
         _ref = this.particles;
         _results = [];
         for (_i = 0, _len = _ref.length; _i < _len; _i++) {
           p = _ref[_i];
-          if (p.alive) {
-            _results.push(p);
-          }
+          _results.push(p.render(ctx));
         }
         return _results;
-      }).call(this);
-      if (this.expired && this.particles.length === 0) {
-        this.dead = true;
-      }
-      ctx.fillStyle = this.style.color;
-      ctx.strokeStyle = this.style.color;
-      if (this.lastbeat !== stage.beat.beat() && !this.expired) {
-        this.lastbeat = stage.beat.beat();
-        for (i = 0, _ref = this.count; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-          this.particles.push(new Particle(this.style));
-        }
-      }
-      _ref2 = this.particles;
-      _results = [];
-      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
-        p = _ref2[_i];
-        _results.push(p.render(ctx));
-      }
-      return _results;
+      }, this));
     };
     return Particles;
   })();
@@ -99,7 +116,6 @@
     function Particle(style) {
       this.style = style;
       this.startedAt = stage.beat.now || now();
-      this.lastFrame = stage.beat.now || now();
       this.alive = true;
       this.angle = Random.float(360);
       this.pos = polar2rect(Random.float.apply(Random, this.style.spawnRadius), this.angle);
@@ -154,14 +170,12 @@
       return ctx.stroke();
     };
     Particle.prototype.update = function(ctx) {
-      var frameTime, i, _results;
-      frameTime = stage.beat.now - this.lastFrame;
-      this.lastFrame = stage.beat.now;
+      var i, _results;
       this.dragVel = polar2rect(this.drag, this.angle);
       _results = [];
       for (i = 0; i <= 1; i++) {
-        this.vel[i] -= this.dragVel[i] * frameTime;
-        _results.push(this.pos[i] += this.vel[i] * frameTime);
+        this.vel[i] -= this.dragVel[i] * stage.beat.frameTime();
+        _results.push(this.pos[i] += this.vel[i] * stage.beat.frameTime());
       }
       return _results;
     };

@@ -1,6 +1,9 @@
-class @Ripples
+class @Ripples extends Layer
   constructor: ->
+    super
+    
     @rotation = Random.float(30, 210, curve:Curve.low2) * [1, -1].random()
+    @composite = ['source-over', ['lighter', 'darker', 'xor'].random()].random()
     
     @style =
       speed:          Random.float(160, 300, curve:Curve.low)
@@ -17,7 +20,7 @@ class @Ripples
       starRadiusDiff: [Random.float(0.4, 2), Random.float(0.4, 2)]
       twist:          Random.float(5, 45) * [1, -1].random()
       lineJoin:       ['round', 'miter'].random()
-      echoes:         [0, Random.int(2, 7, curve:Curve.low2)].random()
+      echoes:         [Random.int(3, 10, curve:Curve.low), 0].random(curve:Curve.low3)
       echoDepth:      [1, Random.float(1, 1.5, curve:Curve.low)].random(curve:Curve.low) * [-1, 1].random()
     
     # Dont animate star radius someimes
@@ -26,15 +29,18 @@ class @Ripples
     @elements = for i in [0...stage.beat.perMeasure]
       new Ripple { @style, beat: i }
   
+  expire: ->
+    super
+    e.expired = yes for e in @elements when not e.dead
+    return
+  
   render: (ctx) ->
-    if @expired and not @dead
-      @elements = for e in @elements when not e.dead
-        e.expired = yes
-        e
-      
-      @dead = yes if @elements.length == 0
+    if @expired
+      @elements = (e for e in @elements when not e.dead)
+      @kill() if @elements.length is 0
     
     ctx.render =>
+      ctx.globalCompositeOperation = @composite
       ctx.rotate (@rotation * stage.beat.elapsed * stage.beat.bps).deg2rad() % Math.TAU
       element.render ctx for element in @elements
   

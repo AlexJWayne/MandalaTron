@@ -1,5 +1,6 @@
-class @Backdrop
+class @Backdrop extends Layer
   constructor: ->
+    super
     @hueShift = Random.int(0, 90,  curve: Curve.low) * [1, -1].random()
     @innerSat = [
       Random.int 0, 100, curve: Curve.low
@@ -18,9 +19,13 @@ class @Backdrop
       Random.int 0, 100
     ]
     @coefCurve = [Curve.low, Curve.high].random()
-    
+  
+  expire: ->
+    super
+    @kill()
+  
   render: (ctx) ->
-    @dead = yes if @expired
+    @kill() if @expired
     ctx.render =>
       ctx.globalAlpha = 1.0
       ctx.fillStyle = @createGradient ctx
