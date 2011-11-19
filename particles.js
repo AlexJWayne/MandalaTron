@@ -15,7 +15,9 @@
       this.count = Random.int(40, 200, {
         curve: Curve.low
       });
-      this.composite = ['source-over', ['lighter', 'darker'].random()].random();
+      this.composite = ['source-over', 'lighter', 'darker'].random({
+        curve: Curve.low
+      });
       this.style = {
         rotation: [[Random.float(-270, 270), Random.float(-270, 270)], [0, 0]].random({
           curve: Curve.low2

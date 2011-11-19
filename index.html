@@ -25,38 +25,41 @@
         background: black;
       }
       
-      canvas.fullscreen {
-        width: 100%;
-        height: 100%;
-      }
-      
       #wrapper {
         margin: 0 auto;
-        width: 600px;
+        width: 800px;
       }
       
       input[type=textfield] {
         width: 50px;
       }
       
-      p#link {
+      .link {
+        margin-top: 0;
+        text-align: left;
+        float: left;
         font-weight: bold;
+      }
+      
+      #link {
+        color: orange;
       }
       
       ul {
         margin: 20px auto;
         text-align: left;
+        clear: both;
       }
       
       a {
         color: yellow;
       }
       
-      #fps {
+      #stats {
         float: right;
       }
       
-      #fpscount {
+      #fpscount, #timing {
         color: white;
       }
       
@@ -64,24 +67,26 @@
         display: none;
       }
       
+      
+      
     </style>
     <style type="text/css" media="screen">
       @media only screen and (max-device-width: 480px) {
         body {
           -webkit-user-select: none;
         }
-        form, iframe, p {
+        form, iframe, p, #github {
           display: none
         }
       }
     </style>
   </head>
   <body>
+    <a href="https://github.com/Squeegy/MandalaTron" id="github"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/7afbc8b248c68eb468279e8c17986ad46549fb71/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a>
     <canvas id="canvas" width="800" height="600"></canvas>
     
     <div id="wrapper">
       <form onsubmit="stage.refresh({ beat:true, randomize:false }); return false;">
-        <span id="fps"><span id="fpscount">0</span> FPS</span>
         <div class="hidden">
           <label>
             Beats/Minute:
@@ -95,14 +100,21 @@
           &nbsp;&nbsp;&nbsp;
           <input type="submit" value="Update & Reseed">
         </div>
-        <label><input type="checkbox" id="cycle" checked>AutoCycle</label>
-        <label><input type="checkbox" id="fullscreen" onclick="var c=stage.canvas; this.checked ? c.className = 'fullscreen' : c.className = '';">Fit Window</label>
       </form>
-
-      <p id="link"></p>
-
+      
+      <div id="stats">
+        <span id="fps"><span id="fpscount">0</span> FPS</span>
+        &nbsp;&nbsp;&nbsp;
+        <span id="timing"></span>
+      </div>
+      
+      <p class="link">
+          Permalink:
+         <a id="link"></a>
+      </p>
+      
       <div id="video"></div>
-
+      
       <ul>
         <li><a href="?bpm=60&vid=_-a83wLOOQs&vidt=7.9&fullscreen=1">Neuromantik - Electronica 2011 - Autofonic</a></li>
         <li><a href="?bpm=54.5&vid=XE1F2OO7LcQ&vidt=3.75&fullscreen=1">Free Music 09: funky electronica with a Chinese-style melody (109 bpm)</a></li>
@@ -115,7 +127,6 @@
     
     <script type="text/javascript" charset="utf-8">
       head.js(
-        
         'extensions.js',
         'seedrandom.js',
         'random.js',
@@ -128,10 +139,10 @@
         'particles.js',
         'orbitals.js',
         'stage.js',
-        
+                
         function() {
           window.stage = new Stage();
-        }        
+        }
       );
     </script>
   </body>

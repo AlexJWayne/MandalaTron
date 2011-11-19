@@ -1,40 +1,42 @@
 
 class @Stage
+  @maxSize = 2000
+  
   constructor: ->
-    # Fetch canvas
+    # Fetch the canvas.
     @canvas = $('canvas')
-    @canvas.width = 800
-    @canvas.height = 600
     
-    # setup iPhone web app
-    if window.navigator.userAgent.indexOf('iPhone') != -1
-      
-      #Save iPhone state
-      @iPhone = yes
-      
-      # Turn on autocycler
-      $('cycle').checked = yes
-      
-      # refresh on orientation change
-      window.onorientationchange = -> window.location.reload yes
-      
-      # disable scrolling
-      @canvas.ontouchmove = (e) -> e.preventDefault()
-      
-      # size canvas properly
-      if document.body.clientWidth == 320
-        @canvas.width = 320
-        @canvas.height = 460
-      else
-        @canvas.width = 480
-        @canvas.height = 300
+    # Get any url parameters and use them.
+    @setup()
     
+    # Canvas is always 200 rendered pixels wide.
+    @canvas.width = 800  
+    
+    # Resize the height of the canvas to math the window aspect ratio
+    if @config.fullscreen
+      # Get window size and aspect ratio.
+      # Note that performance TANKS with a size bigger than 2000px.
+      windowWidth  = window.innerWidth.limit(Stage.maxSize)
+      windowHeight = window.innerHeight.limit(Stage.maxSize)
+      aspect = windowWidth / windowHeight
+      
+      @canvas.height = @canvas.width / aspect
+      
+      # Assign a style to enlarge the canvas to fit the screen dimensions
+      @canvas.style.width = "#{ windowWidth }px"
+      @canvas.style.height = "#{ windowHeight }px"
+      
+    else
+      @canvas.height = 600
+      aspect = @canvas.width / @canvas.height
+    
+    # Do iPhone specific setup to make it work on a tiny screen
+    @iphoneSetup()    
     
     # Fetch drawing context
     @ctx = @canvas.getContext '2d'
     
     # Center canvas bounds
-    aspect = @canvas.width / @canvas.height
     @ctx.translate @canvas.width / 2,   @canvas.height / 2
     @ctx.scale     @canvas.width / 200, @canvas.height / (200 / aspect)
     
@@ -42,12 +44,12 @@ class @Stage
     @frames = 0
     @startedAt  = now()
     @layers = []
-    @totalMeasures = 0
+    @totalMeasures = null
     
     # Setup FPS reporter
     setInterval @showFps, 1000
     
-    @setup()
+    # If we aren't playing a video, just start it now
     @start() unless @config.vid
   
   # Read the query string for some initial values
@@ -64,7 +66,6 @@ class @Stage
       $('measure').value = @config.measure if @config.measure
       
       if @config.fullscreen
-        $('fullscreen').checked = yes
         @canvas.className = 'fullscreen'
       
       if @config.vid
@@ -87,18 +88,36 @@ class @Stage
             setTimeout @start, (parseFloat(@config.vidt) * 1000) || 0
     
   
+  iphoneSetup: ->
+    # setup iPhone web app
+    if window.navigator.userAgent.indexOf('iPhone') != -1
+      
+      #Save iPhone state
+      @iPhone = yes
+      
+      # refresh on orientation change
+      window.onorientationchange = -> window.location.reload yes
+      
+      # disable scrolling
+      @canvas.ontouchmove = (e) -> e.preventDefault()
+      
+      # size canvas properly
+      if document.body.clientWidth == 320
+        @canvas.width = 320
+        @canvas.height = 460
+      else
+        @canvas.width = 480
+        @canvas.height = 300
+  
   onBeat: (beatNumber) ->
     layer.onBeat beatNumber for layer in @layers
-    return
+    $('timing').innerHTML = "#{ @totalMeasures || 0 }:#{ beatNumber + 1 }"
   
   onMeasure: ->
+    @totalMeasures ?= -1
     @totalMeasures++
     layer.onMesure for layer in @layers
-    
-    # Setup a timeout to autocycle if the autocycle box is ticked
-    if @totalMeasures % 4 is 0
-      if $('cycle').checked
-        @refresh randomize: yes, beat: no
+    @refresh() if @totalMeasures > 0 and @totalMeasures % 4 is 0
   
   refresh: (options = {}) =>
     if options.randomize or !Random.seedValue
@@ -167,7 +186,9 @@ class @Stage
       @refresh()
       
       # Set seed link
-      $('link').innerHTML = "#{ window.location.href.split('#')[0] }##{ Random.seedValue }"
+      url = "#{ window.location.href.split('#')[0] }##{ Random.seedValue }"
+      link = $('link')
+      link.innerHTML = link.href = url
       
       # Start the render loop
       @render()

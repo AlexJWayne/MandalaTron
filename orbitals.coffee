@@ -5,7 +5,7 @@ class @Orbitals extends Layer
     @orbitals = []
     @beats = 0
     
-    @composite = ['source-over', ['lighter', 'darker'].random()].random()
+    @composite = ['source-over', 'lighter', 'darker'].random(curve:Curve.low)
     @rotation = Random.float(0, 360)
     @twist    = Random.float(20, 270) * [1, -1].random() until Math.abs(@twist + 360/stage.beat.perMeasure) > 30
     @count    = Random.int(3, 12, curve:Curve.low2)
@@ -17,20 +17,24 @@ class @Orbitals extends Layer
         new HSL(stage.mainHue + Random.float(150, 210), Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()
       ].random()
       
-      size:             Random.float(8, 20, curve:Curve.low2)
+      size:             Random.float(8, 20, curve:Curve.low3)
       radius:           [] # Calculated below
       radiusCurve:      [Curve.low3, Curve.low2, Curve.low, Curve.linear, Curve.high, Curve.high2, Curve.high3].random()
       lifetime:         Random.float(0.5, stage.beat.perMeasure) / stage.beat.bps
-      alpha:            Random.float(0.4, 0.75)
-      alphaBlendPoint:  Random.float(0.1, 0.9)
+      alpha:            Random.float(0.4, 0.8)
+      alphaBlendPoint:  Random.float(0.15, 0.85)
       shape:            ['circle', 'square'].random()
       shapeAspect:      Random.float(0.5, 2)
       beatRotation:     Random.float(5, 45, curve:Curve.low3)
       strokeWidth:      [0, Random.float(0.5, 5)].random()
-      echoes:           [Random.int(0, 4)].random()
+      echoes:           Random.int(0, 4)
+      echoScalar:       Random.float(0.05, 0.5, curve:Curve.low3)
     
-    # If compositing lighter or darker, dont be so opaque
-    @style.alpha /= 2 if @composite is 'lighter' or @composite is 'darker'
+    # Lower alpha by the number of echoes
+    @style.alpha /= @style.echoes + 1
+    
+    # If compositing lighter or darker, be even less opaque
+    @style.alpha *= 0.65 if @composite is 'lighter' or @composite is 'darker'
     
     # Ensure some travel in the radii
     until Math.abs(@style.radius[0] - @style.radius[1]) > 50
@@ -92,8 +96,9 @@ class Orbital
     for i in [0..@style.echoes]
       switch @style.shape
         when 'circle'
-          ctx.fillCircle x, y, @style.size + @style.size * 0.2 * i
+          size = @style.size + @style.size * @style.echoScalar * i
+          ctx.fillCircle x, y, size
         
         when 'square'
-          size = @style.size + @style.size * 0.2 * i
+          size = @style.size + @style.size * @style.echoScalar * i
           ctx.fillRect x-size, y-size, size*2, size*2

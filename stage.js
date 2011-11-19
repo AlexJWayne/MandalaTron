@@ -1,42 +1,36 @@
 (function() {
   var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
   this.Stage = (function() {
+    Stage.maxSize = 2000;
     function Stage() {
       this.stop = __bind(this.stop, this);
       this.start = __bind(this.start, this);
       this.showFps = __bind(this.showFps, this);
       this.render = __bind(this.render, this);
-      this.refresh = __bind(this.refresh, this);      var aspect;
+      this.refresh = __bind(this.refresh, this);      var aspect, windowHeight, windowWidth;
       this.canvas = $('canvas');
+      this.setup();
       this.canvas.width = 800;
-      this.canvas.height = 600;
-      if (window.navigator.userAgent.indexOf('iPhone') !== -1) {
-        this.iPhone = true;
-        $('cycle').checked = true;
-        window.onorientationchange = function() {
-          return window.location.reload(true);
-        };
-        this.canvas.ontouchmove = function(e) {
-          return e.preventDefault();
-        };
-        if (document.body.clientWidth === 320) {
-          this.canvas.width = 320;
-          this.canvas.height = 460;
-        } else {
-          this.canvas.width = 480;
-          this.canvas.height = 300;
-        }
+      if (this.config.fullscreen) {
+        windowWidth = window.innerWidth.limit(Stage.maxSize);
+        windowHeight = window.innerHeight.limit(Stage.maxSize);
+        aspect = windowWidth / windowHeight;
+        this.canvas.height = this.canvas.width / aspect;
+        this.canvas.style.width = "" + windowWidth + "px";
+        this.canvas.style.height = "" + windowHeight + "px";
+      } else {
+        this.canvas.height = 600;
+        aspect = this.canvas.width / this.canvas.height;
       }
+      this.iphoneSetup();
       this.ctx = this.canvas.getContext('2d');
-      aspect = this.canvas.width / this.canvas.height;
       this.ctx.translate(this.canvas.width / 2, this.canvas.height / 2);
       this.ctx.scale(this.canvas.width / 200, this.canvas.height / (200 / aspect));
       this.frames = 0;
       this.startedAt = now();
       this.layers = [];
-      this.totalMeasures = 0;
+      this.totalMeasures = null;
       setInterval(this.showFps, 1000);
-      this.setup();
       if (!this.config.vid) {
         this.start();
       }
@@ -58,7 +52,6 @@
           $('measure').value = this.config.measure;
         }
         if (this.config.fullscreen) {
-          $('fullscreen').checked = true;
           this.canvas.className = 'fullscreen';
         }
         if (this.config.vid) {
@@ -83,6 +76,24 @@
         }
       }
     };
+    Stage.prototype.iphoneSetup = function() {
+      if (window.navigator.userAgent.indexOf('iPhone') !== -1) {
+        this.iPhone = true;
+        window.onorientationchange = function() {
+          return window.location.reload(true);
+        };
+        this.canvas.ontouchmove = function(e) {
+          return e.preventDefault();
+        };
+        if (document.body.clientWidth === 320) {
+          this.canvas.width = 320;
+          return this.canvas.height = 460;
+        } else {
+          this.canvas.width = 480;
+          return this.canvas.height = 300;
+        }
+      }
+    };
     Stage.prototype.onBeat = function(beatNumber) {
       var layer, _i, _len, _ref;
       _ref = this.layers;
@@ -90,22 +101,23 @@
         layer = _ref[_i];
         layer.onBeat(beatNumber);
       }
+      return $('timing').innerHTML = "" + (this.totalMeasures || 0) + ":" + (beatNumber + 1);
     };
     Stage.prototype.onMeasure = function() {
-      var layer, _i, _len, _ref;
+      var layer, _i, _len, _ref, _ref2;
+            if ((_ref = this.totalMeasures) != null) {
+        _ref;
+      } else {
+        this.totalMeasures = -1;
+      };
       this.totalMeasures++;
-      _ref = this.layers;
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        layer = _ref[_i];
+      _ref2 = this.layers;
+      for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+        layer = _ref2[_i];
         layer.onMesure;
       }
-      if (this.totalMeasures % 4 === 0) {
-        if ($('cycle').checked) {
-          return this.refresh({
-            randomize: true,
-            beat: false
-          });
-        }
+      if (this.totalMeasures > 0 && this.totalMeasures % 4 === 0) {
+        return this.refresh();
       }
     };
     Stage.prototype.refresh = function(options) {
@@ -184,8 +196,11 @@
     };
     Stage.prototype.start = function() {
       return setTimeout(__bind(function() {
+        var link, url;
         this.refresh();
-        $('link').innerHTML = "" + (window.location.href.split('#')[0]) + "#" + Random.seedValue;
+        url = "" + (window.location.href.split('#')[0]) + "#" + Random.seedValue;
+        link = $('link');
+        link.innerHTML = link.href = url;
         return this.render();
       }, this), 0);
     };
