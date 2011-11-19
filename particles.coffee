@@ -3,7 +3,7 @@ class @Particles extends Layer
     super
     
     @count = Random.int(40, 200, curve:Curve.low)
-    @composite = ['source-over', ['lighter', 'darker'].random()].random()
+    @composite = ['source-over', 'lighter', 'darker'].random(curve:Curve.low)
     
     @style =
       rotation: [

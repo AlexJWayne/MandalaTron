@@ -3,7 +3,7 @@ class @Ripples extends Layer
     super
     
     @rotation = Random.float(30, 210, curve:Curve.low2) * [1, -1].random()
-    @composite = ['source-over', ['lighter', 'darker', 'xor'].random()].random()
+    @composite = ['source-over', 'lighter', 'darker', 'xor'].random(curve:Curve.low2)
     
     @style =
       speed:          Random.float(160, 300, curve:Curve.low)

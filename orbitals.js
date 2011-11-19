@@ -14,7 +14,9 @@
       Orbitals.__super__.constructor.apply(this, arguments);
       this.orbitals = [];
       this.beats = 0;
-      this.composite = ['source-over', ['lighter', 'darker'].random()].random();
+      this.composite = ['source-over', 'lighter', 'darker'].random({
+        curve: Curve.low
+      });
       this.rotation = Random.float(0, 360);
       while (!(Math.abs(this.twist + 360 / stage.beat.perMeasure) > 30)) {
         this.twist = Random.float(20, 270) * [1, -1].random();
@@ -26,23 +28,27 @@
       this.style = {
         color: [new HSL(stage.mainHue + Random.float(150, 210), Random.float(75, 100), 50).toString(), new HSL(stage.mainHue + Random.float(150, 210), Random.float(0, 80), [90 - Random.int(30), Random.int(30)].random()).toString()].random(),
         size: Random.float(8, 20, {
-          curve: Curve.low2
+          curve: Curve.low3
         }),
         radius: [],
         radiusCurve: [Curve.low3, Curve.low2, Curve.low, Curve.linear, Curve.high, Curve.high2, Curve.high3].random(),
         lifetime: Random.float(0.5, stage.beat.perMeasure) / stage.beat.bps,
-        alpha: Random.float(0.4, 0.75),
-        alphaBlendPoint: Random.float(0.1, 0.9),
+        alpha: Random.float(0.4, 0.8),
+        alphaBlendPoint: Random.float(0.15, 0.85),
         shape: ['circle', 'square'].random(),
         shapeAspect: Random.float(0.5, 2),
         beatRotation: Random.float(5, 45, {
           curve: Curve.low3
         }),
         strokeWidth: [0, Random.float(0.5, 5)].random(),
-        echoes: [Random.int(0, 4)].random()
+        echoes: Random.int(0, 4),
+        echoScalar: Random.float(0.05, 0.5, {
+          curve: Curve.low3
+        })
       };
+      this.style.alpha /= this.style.echoes + 1;
       if (this.composite === 'lighter' || this.composite === 'darker') {
-        this.style.alpha /= 2;
+        this.style.alpha *= 0.65;
       }
       while (!(Math.abs(this.style.radius[0] - this.style.radius[1]) > 50)) {
         this.style.radius = [Random.float(10, 150), Random.float(10, 150)];
@@ -129,9 +135,10 @@
         _results.push((function() {
           switch (this.style.shape) {
             case 'circle':
-              return ctx.fillCircle(x, y, this.style.size + this.style.size * 0.2 * i);
+              size = this.style.size + this.style.size * this.style.echoScalar * i;
+              return ctx.fillCircle(x, y, size);
             case 'square':
-              size = this.style.size + this.style.size * 0.2 * i;
+              size = this.style.size + this.style.size * this.style.echoScalar * i;
               return ctx.fillRect(x - size, y - size, size * 2, size * 2);
           }
         }).call(this));
