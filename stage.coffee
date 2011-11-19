@@ -65,6 +65,9 @@ class @Stage
       $('bpm').value     = @config.bpm     if @config.bpm
       $('measure').value = @config.measure if @config.measure
       
+      if @config.transitions
+        @config.transitions = (parseInt(n, 10) for n in @config.transitions.split ',')
+      
       if @config.fullscreen
         @canvas.className = 'fullscreen'
       
@@ -111,13 +114,28 @@ class @Stage
   
   onBeat: (beatNumber) ->
     layer.onBeat beatNumber for layer in @layers
-    $('timing').innerHTML = "#{ @totalMeasures || 0 }:#{ beatNumber + 1 }"
+    $('beat').innerHTML = beatNumber + 1
   
   onMeasure: ->
-    @totalMeasures ?= -1
+    @totalMeasures ?= 0
     @totalMeasures++
-    layer.onMesure for layer in @layers
-    @refresh() if @totalMeasures > 0 and @totalMeasures % 4 is 0
+    layer.onMeasure() for layer in @layers
+    
+    # Perform a transition
+    if @totalMeasures > 0
+      if @config.transitions
+        if @totalMeasures is @config.transitions[0]
+          @config.transitions.shift()
+          
+          if @config.transitions.length > 0
+            @refresh()
+          else
+            layer.expire() for layer in @layers[1..-1]
+            
+      else
+        @refresh() if @totalMeasures % 4 is 1
+    
+    $('measures').innerHTML = @totalMeasures || 0
   
   refresh: (options = {}) =>
     if options.randomize or !Random.seedValue

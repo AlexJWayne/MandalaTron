@@ -36,7 +36,7 @@
       }
     }
     Stage.prototype.setup = function() {
-      var key, pair, pairs, query, value, _i, _len, _ref;
+      var key, n, pair, pairs, query, value, _i, _len, _ref;
       this.config = {};
       if (query = window.location.search.slice(1)) {
         pairs = query.split('&');
@@ -50,6 +50,18 @@
         }
         if (this.config.measure) {
           $('measure').value = this.config.measure;
+        }
+        if (this.config.transitions) {
+          this.config.transitions = (function() {
+            var _j, _len2, _ref2, _results;
+            _ref2 = this.config.transitions.split(',');
+            _results = [];
+            for (_j = 0, _len2 = _ref2.length; _j < _len2; _j++) {
+              n = _ref2[_j];
+              _results.push(parseInt(n, 10));
+            }
+            return _results;
+          }).call(this);
         }
         if (this.config.fullscreen) {
           this.canvas.className = 'fullscreen';
@@ -101,24 +113,42 @@
         layer = _ref[_i];
         layer.onBeat(beatNumber);
       }
-      return $('timing').innerHTML = "" + (this.totalMeasures || 0) + ":" + (beatNumber + 1);
+      return $('beat').innerHTML = beatNumber + 1;
     };
     Stage.prototype.onMeasure = function() {
-      var layer, _i, _len, _ref, _ref2;
+      var layer, _i, _j, _len, _len2, _ref, _ref2, _ref3;
             if ((_ref = this.totalMeasures) != null) {
         _ref;
       } else {
-        this.totalMeasures = -1;
+        this.totalMeasures = 0;
       };
       this.totalMeasures++;
       _ref2 = this.layers;
       for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
         layer = _ref2[_i];
-        layer.onMesure;
+        layer.onMeasure();
       }
-      if (this.totalMeasures > 0 && this.totalMeasures % 4 === 0) {
-        return this.refresh();
+      if (this.totalMeasures > 0) {
+        if (this.config.transitions) {
+          if (this.totalMeasures === this.config.transitions[0]) {
+            this.config.transitions.shift();
+            if (this.config.transitions.length > 0) {
+              this.refresh();
+            } else {
+              _ref3 = this.layers.slice(1);
+              for (_j = 0, _len2 = _ref3.length; _j < _len2; _j++) {
+                layer = _ref3[_j];
+                layer.expire();
+              }
+            }
+          }
+        } else {
+          if (this.totalMeasures % 4 === 1) {
+            this.refresh();
+          }
+        }
       }
+      return $('measures').innerHTML = this.totalMeasures || 0;
     };
     Stage.prototype.refresh = function(options) {
       var i, klass, layer, maxLayers, _i, _len, _ref;
