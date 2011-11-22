@@ -12,7 +12,10 @@
     function Lattice() {
       var i, next, point, step, _ref;
       Lattice.__super__.constructor.apply(this, arguments);
-      this.composite = ['source-over', ['lighter', 'darker', 'xor'].random()].random();
+      this.composite = ['source-over', 'lighter', 'darker'].random();
+      if (Random.float(1) < 0.1) {
+        this.composite = 'xor';
+      }
       this.rotation = Random.float(10, 60, {
         curve: Curve.low
       }) * [1, -1].random();
@@ -33,8 +36,8 @@
       });
       this.alpha = Random.float(0.35, 1);
       this.taper = [
-        Random.float(0.2, 0.85, {
-          curve: Curve.low2
+        Random.float(0.2, 0.75, {
+          curve: Curve.low3
         }), false
       ].random({
         curve: Curve.low5

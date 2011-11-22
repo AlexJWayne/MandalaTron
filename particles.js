@@ -12,12 +12,10 @@
     __extends(Particles, Layer);
     function Particles() {
       Particles.__super__.constructor.apply(this, arguments);
-      this.count = Random.int(40, 200, {
+      this.count = Random.int(40, 180, {
         curve: Curve.low
       });
-      this.composite = ['source-over', 'lighter', 'darker'].random({
-        curve: Curve.low
-      });
+      this.composite = ['source-over', 'lighter', 'darker'].random();
       this.style = {
         rotation: [[Random.float(-270, 270), Random.float(-270, 270)], [0, 0]].random({
           curve: Curve.low2
@@ -42,6 +40,9 @@
         ],
         zoomLengthScalar: Random.float(40, 130, {
           curve: Curve.low
+        }),
+        emissionTime: Random.float(0.05, 0.3, {
+          curve: Curve.low3
         })
       };
       if (this.composite === 'lighter' || this.composite === 'darker') {
@@ -79,7 +80,7 @@
         return;
       }
       for (i = 0, _ref = this.count; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-        this.particles.push(new Particle(this.style));
+        this.particles.push(new Particle(this.style, Random.float(0, this.emissionTime)));
       }
     };
     Particles.prototype.render = function(ctx) {
@@ -118,6 +119,7 @@
     function Particle(style) {
       this.style = style;
       this.startedAt = stage.beat.now || now();
+      this.startedAt += Random.float(this.style.emissionTime) / stage.beat.bps;
       this.alive = true;
       this.angle = Random.float(360);
       this.pos = polar2rect(Random.float.apply(Random, this.style.spawnRadius), this.angle);
@@ -130,6 +132,9 @@
     }
     Particle.prototype.render = function(ctx) {
       var lifeProgession, livedFor;
+      if (stage.beat.now && this.startedAt > stage.beat.now) {
+        return;
+      }
       livedFor = stage.beat.now - this.startedAt;
       lifeProgession = livedFor / this.lifetime;
       if (livedFor > this.lifetime) {
@@ -154,7 +159,7 @@
     };
     Particle.prototype.renderArc = function(ctx) {
       var a, r, _ref;
-      ctx.lineWidth = this.size * 0.75;
+      ctx.lineWidth = this.size;
       ctx.lineCap = 'round';
       _ref = rect2polar.apply(null, this.pos), r = _ref[0], a = _ref[1];
       ctx.beginPath();
@@ -163,7 +168,7 @@
     };
     Particle.prototype.renderZoom = function(ctx) {
       var a, r, _ref;
-      ctx.lineWidth = this.size * 0.75;
+      ctx.lineWidth = this.size;
       ctx.lineCap = 'round';
       _ref = rect2polar.apply(null, this.pos), r = _ref[0], a = _ref[1];
       ctx.beginPath();

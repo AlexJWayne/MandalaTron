@@ -2,8 +2,8 @@ class @Particles extends Layer
   constructor: ->
     super
     
-    @count = Random.int(40, 200, curve:Curve.low)
-    @composite = ['source-over', 'lighter', 'darker'].random(curve:Curve.low)
+    @count = Random.int(40, 180, curve:Curve.low)
+    @composite = ['source-over', 'lighter', 'darker'].random()
     
     @style =
       rotation: [
@@ -23,6 +23,8 @@ class @Particles extends Layer
       type:       ['circle', 'arc', 'zoom'].random()
       arcWidth:   [Random.float(3, 30, curve:Curve.low), Random.float(3, 45, curve:Curve.low)]
       zoomLengthScalar: Random.float(40, 130, curve:Curve.low)
+      
+      emissionTime: Random.float(0.05, 0.3, curve:Curve.low3)
     
     # If compositing lighter or darker, dont be so opaque
     @style.alpha /= 2 if @composite is 'lighter' or @composite is 'darker'    
@@ -52,7 +54,7 @@ class @Particles extends Layer
   
   onBeat: ->
     return if @expired
-    @particles.push new Particle(@style) for i in [0..@count]
+    @particles.push new Particle(@style, Random.float(0, @emissionTime)) for i in [0..@count]
     return
   
   render: (ctx) ->
@@ -69,6 +71,8 @@ class @Particles extends Layer
 class Particle
   constructor: (@style) ->
     @startedAt = stage.beat.now || now()
+    @startedAt += Random.float(@style.emissionTime) / stage.beat.bps
+    
     @alive     = yes
     
     @angle     = Random.float(360)
@@ -81,6 +85,8 @@ class Particle
     @arcWidth  = Random.float(@style.arcWidth...)
     
   render: (ctx) ->
+    return if stage.beat.now and @startedAt > stage.beat.now
+    
     livedFor = stage.beat.now - @startedAt
     lifeProgession = livedFor / @lifetime
     return @alive = no if livedFor > @lifetime
@@ -106,7 +112,7 @@ class Particle
     ctx.fillCircle @pos..., @size
   
   renderArc: (ctx) ->
-    ctx.lineWidth = @size * 0.75
+    ctx.lineWidth = @size
     ctx.lineCap = 'round'
     
     [r, a] = rect2polar @pos...
@@ -115,7 +121,7 @@ class Particle
     ctx.stroke()
   
   renderZoom: (ctx) ->
-    ctx.lineWidth = @size * 0.75
+    ctx.lineWidth = @size
     ctx.lineCap = 'round'
     
     [r, a] = rect2polar @pos...

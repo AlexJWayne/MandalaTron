@@ -16,15 +16,13 @@
       this.update();
       beat = 0;
       setTimeout(__bind(function() {
-        this.intervals = [
+        return this.intervals = [
           accurateInterval(1000 / this.bps, __bind(function() {
             return stage.onBeat(this.beat());
           }, this)), accurateInterval(1000 * this.perMeasure / this.bps, __bind(function() {
             return stage.onMeasure();
           }, this))
         ];
-        stage.onBeat(beat);
-        return stage.onMeasure();
       }, this), 20);
       return this;
     };

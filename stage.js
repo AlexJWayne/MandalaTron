@@ -10,7 +10,7 @@
       this.refresh = __bind(this.refresh, this);      var aspect, windowHeight, windowWidth;
       this.canvas = $('canvas');
       this.setup();
-      this.canvas.width = 800;
+      this.canvas.width = parseInt(this.config.width, 10) || 800;
       if (this.config.fullscreen) {
         windowWidth = window.innerWidth.limit(Stage.maxSize);
         windowHeight = window.innerHeight.limit(Stage.maxSize);
@@ -143,7 +143,7 @@
             }
           }
         } else {
-          if (this.totalMeasures % 4 === 1) {
+          if (this.totalMeasures % 4 === 0) {
             this.refresh();
           }
         }
@@ -180,7 +180,7 @@
       if (options.color || !this.layers[0]) {
         this.layers[0] = new Backdrop();
       }
-      maxLayers = Random.int(5, 10);
+      maxLayers = Random.int(4, 8);
       if (this.iPhone) {
         maxLayers = 3;
       }

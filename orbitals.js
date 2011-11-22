@@ -14,9 +14,7 @@
       Orbitals.__super__.constructor.apply(this, arguments);
       this.orbitals = [];
       this.beats = 0;
-      this.composite = ['source-over', 'lighter', 'darker'].random({
-        curve: Curve.low
-      });
+      this.composite = ['source-over', 'lighter', 'darker'].random();
       this.rotation = Random.float(0, 360);
       while (!(Math.abs(this.twist + 360 / stage.beat.perMeasure) > 30)) {
         this.twist = Random.float(20, 270) * [1, -1].random();
@@ -32,7 +30,9 @@
         }),
         radius: [],
         radiusCurve: [Curve.low3, Curve.low2, Curve.low, Curve.linear, Curve.high, Curve.high2, Curve.high3].random(),
-        lifetime: Random.float(0.5, stage.beat.perMeasure) / stage.beat.bps,
+        lifetime: Random.float(0.5, stage.beat.perMeasure, {
+          curve: Curve.high2
+        }) / stage.beat.bps,
         alpha: Random.float(0.4, 0.8),
         alphaBlendPoint: Random.float(0.15, 0.85),
         shape: ['circle', 'square'].random(),
@@ -41,9 +41,9 @@
           curve: Curve.low3
         }),
         strokeWidth: [0, Random.float(0.5, 5)].random(),
-        echoes: Random.int(0, 4),
+        echoes: Random.int(1, 5),
         echoScalar: Random.float(0.05, 0.5, {
-          curve: Curve.low3
+          curve: Curve.low2
         })
       };
       this.style.alpha /= this.style.echoes + 1;
