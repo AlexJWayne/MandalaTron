@@ -16,11 +16,7 @@ class @Beat
       @intervals = [
         accurateInterval 1000 / @bps,               => stage.onBeat @beat()
         accurateInterval 1000 * @perMeasure / @bps, => stage.onMeasure()
-      ]
-      
-      stage.onBeat beat
-      stage.onMeasure()
-      
+      ]      
     , 20
     this
   

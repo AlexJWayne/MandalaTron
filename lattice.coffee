@@ -2,7 +2,9 @@ class @Lattice extends Layer
   constructor: ->
     super
     
-    @composite      = ['source-over', ['lighter', 'darker', 'xor'].random()].random()
+    @composite      = ['source-over', 'lighter', 'darker'].random()
+    @composite      = 'xor' if Random.float(1) < 0.1
+    
     @rotation       = Random.float(10, 60, curve:Curve.low) * [1, -1].random()
     @rotOffset      = Random.float(0, @rotOffset)
     @twist          = Random.float(30, 500, curve: Curve.low) * [1, -1].random()
@@ -12,7 +14,7 @@ class @Lattice extends Layer
     @aplha          = Random.float 0.25, 1
     @width          = Random.float(1, 6, curve: Curve.low3)
     @alpha          = Random.float(0.35, 1)
-    @taper          = [Random.float(0.2, 0.85, curve:Curve.low2), no].random(curve:Curve.low5)
+    @taper          = [Random.float(0.2, 0.75, curve:Curve.low3), no].random(curve:Curve.low5)
     @curves =
       r: Curve.low3
       a: [Curve.low5, Curve.low4, Curve.low3, Curve.low2, Curve.linear, Curve.high2, Curve.high3, Curve.high4, Curve.high5].random()

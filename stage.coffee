@@ -10,7 +10,7 @@ class @Stage
     @setup()
     
     # Canvas is always 200 rendered pixels wide.
-    @canvas.width = 800  
+    @canvas.width = parseInt(@config.width, 10) || 800
     
     # Resize the height of the canvas to math the window aspect ratio
     if @config.fullscreen
@@ -133,7 +133,7 @@ class @Stage
             layer.expire() for layer in @layers[1..-1]
             
       else
-        @refresh() if @totalMeasures % 4 is 1
+        @refresh() if @totalMeasures % 4 is 0
     
     $('measures').innerHTML = @totalMeasures || 0
   
@@ -162,7 +162,7 @@ class @Stage
     @layers[0] = new Backdrop() if options.color or !@layers[0]
     
     # Generate some layers
-    maxLayers = Random.int(5, 10)
+    maxLayers = Random.int(4, 8)
     maxLayers = 3 if @iPhone
     for i in [0...maxLayers]
       klass = [Ripples, Lattice, Particles, Orbitals].random()
@@ -170,7 +170,7 @@ class @Stage
     
     # # TEMP
     # @layers = [@layers[0]]
-    # @layers.push new Lattice()
+    # @layers.push new Particles()
     
     @beat.start() unless @beat.started
   

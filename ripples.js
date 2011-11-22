@@ -16,9 +16,7 @@
       this.rotation = Random.float(30, 210, {
         curve: Curve.low2
       }) * [1, -1].random();
-      this.composite = ['source-over', 'lighter', 'darker', 'xor'].random({
-        curve: Curve.low2
-      });
+      this.composite = ['source-over', 'lighter', 'darker', 'xor'].random();
       this.style = {
         speed: Random.float(160, 300, {
           curve: Curve.low
@@ -67,6 +65,8 @@
           curve: Curve.low
         }) * [-1, 1].random()
       };
+      this.style.minRadius = this.style.echoDepth > 0 ? this.style.echoDepth * this.style.echoes * 0.6 : this.style.baseWidth[0] * 3;
+      console.log(this.style.echoDepth, this.style.echoes, this.style.minRadius);
       if (Random.float(1) < 0.25) {
         this.style.starRadiusDiff = [this.style.starRadiusDiff[0]];
       }
@@ -143,51 +143,58 @@
       this.startedAt = stage.beat.startedAt - (this.offset * this.lifetime);
     }
     Ripple.prototype.drawShape = function(ctx, radius, echo) {
-      var angle, completion, controlPointAngle, endPointAngle, i, method, pRadius, points, _ref;
+      var scalar;
+      if (radius < this.style.minRadius) {
+        scalar = radius.normalize(0, this.style.minRadius);
+        radius = this.style.minRadius;
+      }
+      radius += echo * ctx.lineWidth * this.style.echoDepth;
       if (radius < 0) {
         return;
       }
-      ctx.beginPath();
-      radius += echo * ctx.lineWidth * this.style.echoDepth;
-      if (radius < 0) {
-        radius = 0;
-      }
-      ctx.globalAlpha = this.style.alpha * Curve.low((this.style.echoes - echo) / this.style.echoes);
-      switch (this.style.shape) {
-        case 'circle':
-          ctx.circle(0, 0, radius);
-          break;
-        case 'ngon':
-          for (i = 0, _ref = this.style.ngon; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
-            endPointAngle = i * 360 / this.style.ngon;
-            if (i === 0) {
-              ctx.moveTo.apply(ctx, polar2rect(radius, endPointAngle));
-            } else {
-              if (this.style.ngonCurve === 0) {
-                ctx.lineTo.apply(ctx, polar2rect(radius, endPointAngle));
+      return ctx.render(__bind(function() {
+        var angle, completion, controlPointAngle, endPointAngle, i, method, pRadius, points, _ref;
+        ctx.globalAlpha = this.style.alpha * Curve.low((this.style.echoes - echo) / this.style.echoes);
+        if (scalar) {
+          ctx.scale(scalar, scalar);
+        }
+        ctx.beginPath();
+        switch (this.style.shape) {
+          case 'circle':
+            ctx.circle(0, 0, radius);
+            break;
+          case 'ngon':
+            for (i = 0, _ref = this.style.ngon; 0 <= _ref ? i <= _ref : i >= _ref; 0 <= _ref ? i++ : i--) {
+              endPointAngle = i * 360 / this.style.ngon;
+              if (i === 0) {
+                ctx.moveTo.apply(ctx, polar2rect(radius, endPointAngle));
               } else {
-                controlPointAngle = (i - 0.5) * 360 / this.style.ngon;
-                ctx.quadraticCurveTo.apply(ctx, __slice.call(polar2rect(radius * this.style.ngonCurve, controlPointAngle)).concat(__slice.call(polar2rect(radius, endPointAngle))));
+                if (this.style.ngonCurve === 0) {
+                  ctx.lineTo.apply(ctx, polar2rect(radius, endPointAngle));
+                } else {
+                  controlPointAngle = (i - 0.5) * 360 / this.style.ngon;
+                  ctx.quadraticCurveTo.apply(ctx, __slice.call(polar2rect(radius * this.style.ngonCurve, controlPointAngle)).concat(__slice.call(polar2rect(radius, endPointAngle))));
+                }
               }
             }
-          }
-          ctx.closePath();
-          break;
-        case 'star':
-          completion = (stage.beat.now - this.startedAt) / this.lifetime;
-          points = this.style.ngon * 2;
-          for (i = 0; 0 <= points ? i < points : i > points; 0 <= points ? i++ : i--) {
-            angle = i * 360 / points;
-            pRadius = radius;
-            if (i % 2 === 0) {
-              pRadius *= this.style.starRadiusDiff.blend(completion);
+            ctx.closePath();
+            break;
+          case 'star':
+            completion = (stage.beat.now - this.startedAt) / this.lifetime;
+            points = this.style.ngon * 2;
+            for (i = 0; 0 <= points ? i < points : i > points; 0 <= points ? i++ : i--) {
+              angle = i * 360 / points;
+              pRadius = radius;
+              if (i % 2 === 0) {
+                pRadius *= this.style.starRadiusDiff.blend(completion);
+              }
+              method = i === 0 ? 'moveTo' : 'lineTo';
+              ctx[method].apply(ctx, polar2rect(pRadius, angle));
             }
-            method = i === 0 ? 'moveTo' : 'lineTo';
-            ctx[method].apply(ctx, polar2rect(pRadius, angle));
-          }
-          ctx.closePath();
-      }
-      return ctx.stroke();
+            ctx.closePath();
+        }
+        return ctx.stroke();
+      }, this));
     };
     Ripple.prototype.render = function(ctx) {
       var completion, elapsed, speed;

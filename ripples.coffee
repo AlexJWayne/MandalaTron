@@ -3,7 +3,7 @@ class @Ripples extends Layer
     super
     
     @rotation = Random.float(30, 210, curve:Curve.low2) * [1, -1].random()
-    @composite = ['source-over', 'lighter', 'darker', 'xor'].random(curve:Curve.low2)
+    @composite = ['source-over', 'lighter', 'darker', 'xor'].random()
     
     @style =
       speed:          Random.float(160, 300, curve:Curve.low)
@@ -22,6 +22,15 @@ class @Ripples extends Layer
       lineJoin:       ['round', 'miter'].random()
       echoes:         [Random.int(3, 10, curve:Curve.low), 0].random(curve:Curve.low3)
       echoDepth:      [1, Random.float(1, 1.5, curve:Curve.low)].random(curve:Curve.low) * [-1, 1].random()
+    
+    # Store min and max radius
+    @style.minRadius =
+      if @style.echoDepth > 0
+        @style.echoDepth * @style.echoes * 0.6
+      else
+        @style.baseWidth[0] * 3
+    
+    console.log @style.echoDepth, @style.echoes, @style.minRadius
     
     # Dont animate star radius someimes
     @style.starRadiusDiff = [@style.starRadiusDiff[0]] if Random.float(1) < 0.25
@@ -60,48 +69,58 @@ class Ripple
     @startedAt  = stage.beat.startedAt - (@offset * @lifetime)
   
   drawShape: (ctx, radius, echo) ->
-    return if radius < 0
-    ctx.beginPath()
     
-    # Style echoes
-    radius += echo * ctx.lineWidth * @style.echoDepth
-    radius = 0 if radius < 0
-    ctx.globalAlpha = @style.alpha * Curve.low((@style.echoes - echo) / @style.echoes)
-    
-    switch @style.shape
-      when 'circle'
-        ctx.circle 0, 0, radius
-    
-      when 'ngon'
-        for i in [0..@style.ngon]
-          endPointAngle = i * 360 / @style.ngon
-          if i == 0
-            ctx.moveTo polar2rect(radius, endPointAngle)...
-          else
-            
-            if @style.ngonCurve == 0
-              ctx.lineTo polar2rect(radius, endPointAngle)...
-            else
-              controlPointAngle = (i - 0.5) * 360 / @style.ngon
-              ctx.quadraticCurveTo polar2rect(radius * @style.ngonCurve, controlPointAngle)..., polar2rect(radius, endPointAngle)...
-            
-          
-        ctx.closePath()
-      
-      when 'star'
-        completion = (stage.beat.now - @startedAt)/@lifetime
-        points = @style.ngon * 2
+    # Below the minimum readius, scale instead
+    if radius < @style.minRadius
+      scalar = radius.normalize(0, @style.minRadius)
+      radius = @style.minRadius
         
-        for i in [0...points]
-          angle = i * 360 / points
-          pRadius = radius
-          pRadius *= @style.starRadiusDiff.blend(completion) if i % 2 == 0
-          
-          method = if i == 0 then 'moveTo' else 'lineTo'
-          ctx[method] polar2rect(pRadius, angle)...
-        ctx.closePath()
+    # Compute radius with echo
+    radius += echo * ctx.lineWidth * @style.echoDepth
+    return if radius < 0
+        
+    ctx.render =>
+      
+      # Set alpha
+      ctx.globalAlpha = @style.alpha * Curve.low((@style.echoes - echo) / @style.echoes)
+      
+      # Scale the ctx if we need to
+      ctx.scale scalar, scalar if scalar
+      
+      # Draw the shape
+      ctx.beginPath()
+      switch @style.shape
+        when 'circle'
+          ctx.circle 0, 0, radius
     
-    ctx.stroke()
+        when 'ngon'
+          for i in [0..@style.ngon]
+            endPointAngle = i * 360 / @style.ngon
+            if i == 0
+              ctx.moveTo polar2rect(radius, endPointAngle)...
+            else
+            
+              if @style.ngonCurve == 0
+                ctx.lineTo polar2rect(radius, endPointAngle)...
+              else
+                controlPointAngle = (i - 0.5) * 360 / @style.ngon
+                ctx.quadraticCurveTo polar2rect(radius * @style.ngonCurve, controlPointAngle)..., polar2rect(radius, endPointAngle)...
+          ctx.closePath()
+      
+        when 'star'
+          completion = (stage.beat.now - @startedAt)/@lifetime
+          points = @style.ngon * 2
+        
+          for i in [0...points]
+            angle = i * 360 / points
+            pRadius = radius
+            pRadius *= @style.starRadiusDiff.blend(completion) if i % 2 == 0
+          
+            method = if i == 0 then 'moveTo' else 'lineTo'
+            ctx[method] polar2rect(pRadius, angle)...
+          ctx.closePath()
+    
+      ctx.stroke()
   
   render: (ctx) ->
     @alive = yes if stage.beat.beat() == @beat
