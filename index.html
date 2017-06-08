@@ -2,14 +2,14 @@
 <html>
   <head>
     <title>MandalaTron</title>
-        
+
     <meta name='viewport'                     content='initial-scale=1.0; maximum-scale=1.0; user-scalable=0;'>
     <meta name="apple-mobile-web-app-capable" content="yes"> <!-- iPhone full screen from home screen bookmark -->
     <meta name="apple-mobile-web-app-status-bar-style" content="black">
     <link rel="apple-touch-icon" href="icon.jpg">
-    
+
     <script src="head.js" type="text/javascript" charset="utf-8"></script>
-    
+
     <style type="text/css" media="screen">
       body {
         background: black;
@@ -19,56 +19,56 @@
         font-size: 12px;
         color: #aaa;
       }
-      
+
       canvas {
         margin: auto;
         background: black;
       }
-      
+
       #wrapper {
         margin: 0 auto;
         width: 800px;
       }
-      
+
       input[type=textfield] {
         width: 50px;
       }
-      
+
       .link {
         margin-top: 0;
         text-align: left;
         float: left;
         font-weight: bold;
       }
-      
+
       #link {
         color: orange;
       }
-      
+
       ul {
         margin: 20px auto;
         text-align: left;
         clear: both;
       }
-      
+
       a {
         color: yellow;
       }
-      
+
       #stats {
         float: right;
       }
-      
+
       #fpscount, #timing {
         color: white;
       }
-      
+
       .hidden {
         display: none;
       }
-      
-      
-      
+
+
+
     </style>
     <style type="text/css" media="screen">
       @media only screen and (max-device-width: 480px) {
@@ -82,55 +82,57 @@
     </style>
   </head>
   <body>
-    <a href="https://github.com/Squeegy/MandalaTron" id="github"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/7afbc8b248c68eb468279e8c17986ad46549fb71/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a>
+    <!-- <a href="https://github.com/Squeegy/MandalaTron" id="github"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://a248.e.akamai.net/assets.github.com/img/7afbc8b248c68eb468279e8c17986ad46549fb71/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f6461726b626c75655f3132313632312e706e67" alt="Fork me on GitHub"></a> -->
     <canvas id="canvas" width="800" height="600"></canvas>
-    
-    <div id="wrapper">
-      <form onsubmit="stage.refresh({ beat:true, randomize:false }); return false;">
-        <div class="hidden">
-          <label>
-            Beats/Minute:
-            <input type="textfield" id="bpm" value="60">
-          </label>
+
+    <div style="display:none">
+      <div id="wrapper">
+        <form onsubmit="stage.refresh({ beat:true, randomize:false }); return false;">
+          <div class="hidden">
+            <label>
+              Beats/Minute:
+              <input type="textfield" id="bpm" value="60">
+            </label>
+            &nbsp;&nbsp;&nbsp;
+            <label>
+              Beats/Measure:
+              <input type="textfield" id="measure" value="4">
+            </label>
+            &nbsp;&nbsp;&nbsp;
+            <input type="submit" value="Update & Reseed">
+          </div>
+        </form>
+
+        <div id="stats">
+          <span id="fps"><span id="fpscount">0</span> FPS</span>
           &nbsp;&nbsp;&nbsp;
-          <label>
-            Beats/Measure:
-            <input type="textfield" id="measure" value="4">
-          </label>
-          &nbsp;&nbsp;&nbsp;
-          <input type="submit" value="Update & Reseed">
+          <span id="timing">
+            <span id="measures">0</span>:<span id="beat">0</span>
+          </span>
         </div>
-      </form>
-      
-      <div id="stats">
-        <span id="fps"><span id="fpscount">0</span> FPS</span>
-        &nbsp;&nbsp;&nbsp;
-        <span id="timing">
-          <span id="measures">0</span>:<span id="beat">0</span>
-        </span>
+
+        <p class="link">
+            Permalink:
+           <a id="link"></a>
+        </p>
+
+        <div id="video"></div>
+
+        <ul>
+          <li><a href="?bpm=60&vid=_-a83wLOOQs&vidt=7.9&transitions=4,8,12,16,18,22,24,28,30,34,36,40,46,48&fullscreen=1">Neuromantik - Electronica 2011 - Autofonic</a></li>
+          <li><a href="?bpm=54.5&vid=XE1F2OO7LcQ&vidt=3.75&fullscreen=1">Free Music 09: funky electronica with a Chinese-style melody (109 bpm)</a></li>
+          <li><a href="?bpm=63&vid=lRVam-Fyn4Y&vidt=0.5&fullscreen=1">Underworld - Dark And Long (Christian Smith Tronic Treatment Remix)</a></li>
+          <li><a href="?bpm=64&vid=PU23qfTqjdU&vidt=0.7&fullscreen=1">Bastards of Funk & Sonic Union - Glitter.</a></li>
+          <li><a href="?bpm=64&vid=xEOqt0PWXB0&vidt=0.1&fullscreen=1">Kaskade - Step One Two (HQ)</a></li>
+          <li><a href="?bpm=64&vid=EaAzRm5MfY8&vidt=0.5&fullscreen=1">Morgan Page - Fight For You</a></li>
+          <li><a href="?bpm=54&vid=KbpuQaSfnfI&vidt=0.5&fullscreen=1">Madonna - Frozen</a></li>
+          <li><a href="?bpm=53&vid=rYEDA3JcQqw&vidt=4.6&fullscreen=1">Adele - Rolling In The Deep</a></li>
+          <li><a href="?bpm=62.5&vid=PGqdw3i5xAA&vidt=13.8&fullscreen=1">Madonna - Hung Up</a></li>
+        </ul>
+
       </div>
-      
-      <p class="link">
-          Permalink:
-         <a id="link"></a>
-      </p>
-      
-      <div id="video"></div>
-      
-      <ul>
-        <li><a href="?bpm=60&vid=_-a83wLOOQs&vidt=7.9&transitions=4,8,12,16,18,22,24,28,30,34,36,40,46,48&fullscreen=1">Neuromantik - Electronica 2011 - Autofonic</a></li>
-        <li><a href="?bpm=54.5&vid=XE1F2OO7LcQ&vidt=3.75&fullscreen=1">Free Music 09: funky electronica with a Chinese-style melody (109 bpm)</a></li>
-        <li><a href="?bpm=63&vid=lRVam-Fyn4Y&vidt=0.5&fullscreen=1">Underworld - Dark And Long (Christian Smith Tronic Treatment Remix)</a></li>
-        <li><a href="?bpm=64&vid=PU23qfTqjdU&vidt=0.7&fullscreen=1">Bastards of Funk & Sonic Union - Glitter.</a></li>
-        <li><a href="?bpm=64&vid=xEOqt0PWXB0&vidt=0.1&fullscreen=1">Kaskade - Step One Two (HQ)</a></li>
-        <li><a href="?bpm=64&vid=EaAzRm5MfY8&vidt=0.5&fullscreen=1">Morgan Page - Fight For You</a></li>
-        <li><a href="?bpm=54&vid=KbpuQaSfnfI&vidt=0.5&fullscreen=1">Madonna - Frozen</a></li>
-        <li><a href="?bpm=53&vid=rYEDA3JcQqw&vidt=4.6&fullscreen=1">Adele - Rolling In The Deep</a></li>
-        <li><a href="?bpm=62.5&vid=PGqdw3i5xAA&vidt=13.8&fullscreen=1">Madonna - Hung Up</a></li>
-      </ul>
-      
     </div>
-    
+
     <script type="text/javascript" charset="utf-8">
       head.js(
         'extensions.js',
@@ -145,7 +147,7 @@
         'particles.js',
         'orbitals.js',
         'stage.js',
-                
+
         function() {
           window.stage = new Stage();
         }
